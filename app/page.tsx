@@ -1,16 +1,32 @@
-import Hero from "@/components/hero";
-import ConnectSupabaseSteps from "@/components/tutorial/connect-supabase-steps";
-import SignUpUserSteps from "@/components/tutorial/sign-up-user-steps";
-import { hasEnvVars } from "@/utils/supabase/check-env-vars";
+import {ScrollArea, ScrollBar} from '@/components/ui/scroll-area';
+import {Suspense} from 'react';
+import {createClient} from "@/utils/supabase/server";
+import {TrackTable} from "@/app/track-table";
 
-export default async function Index() {
-  return (
-    <>
-      <Hero />
-      <main className="flex-1 flex flex-col gap-6 px-4">
-        <h2 className="font-medium text-xl mb-4">Next steps</h2>
-        {hasEnvVars ? <SignUpUserSteps /> : <ConnectSupabaseSteps />}
-      </main>
-    </>
-  );
+async function Tracks({
+                          searchParams,
+                      }: {
+    searchParams: Promise<{ q: string }>;
+}) {
+    const {data: songs} = await createClient().from("song").select("*")
+    return <TrackTable playlist={songs ?? []}/>;
+}
+
+export default function Page({
+                                 searchParams,
+                             }: {
+    searchParams: Promise<{ q: string }>;
+}) {
+    return (
+        <div className="flex-1 flex flex-col overflow-hidden bg-[#0A0A0A] pb-[69px] pt-2">
+            <ScrollArea className="flex-1">
+                <div className="min-w-max">
+                    <Suspense fallback={<div className="w-full"/>}>
+                        <Tracks searchParams={searchParams}/>
+                    </Suspense>
+                </div>
+                <ScrollBar orientation="horizontal"/>
+            </ScrollArea>
+        </div>
+    );
 }

@@ -67,3 +67,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+tr:focus {
+  outline: none;
+}
