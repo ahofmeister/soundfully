@@ -14,7 +14,7 @@ export default async function UploadPage() {
     }
 
     return (
-            <div className="w-full flex">
+            <div className="w-full flex justify-center items-center">
                 <Upload/>
         </div>
     );

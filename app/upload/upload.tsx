@@ -56,7 +56,7 @@ const Upload = () => {
                         console.log(data)
                     }
 
-                    if(uploadError){
+                    if (uploadError) {
                         console.log(uploadError)
                     }
                 }
@@ -90,22 +90,20 @@ const Upload = () => {
     }
 
     return (
-        <div>
-            <form className="" onSubmit={form.handleSubmit(onSubmit)}>
-                <div>
-                    <Input multiple
-                           id="song"
-                           type="file"
-                           disabled={isLoading}
-                           accept=".mp3"
-                           {...form.register("songs", {required: true})}
-                    />
-                </div>
-                <Button disabled={isLoading} type="submit">
+        <form className="" onSubmit={form.handleSubmit(onSubmit)}>
+            <div className={"flex flex-col justify-center items-center"}>
+                <Input multiple
+                       id="song" className={"cursor-pointer"}
+                       type="file"
+                       disabled={isLoading}
+                       accept=".mp3"
+                       {...form.register("songs", {required: true})}
+                />
+                <Button  className={"w-full mt-4"} disabled={isLoading} type="submit">
                     Upload
                 </Button>
-            </form>
-        </div>
+            </div>
+        </form>
     );
 };
 
