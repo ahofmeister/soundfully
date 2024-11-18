@@ -207,7 +207,6 @@ export function TrackTable({
             ref={tableRef}
             className="w-full text-xs"
         >
-            {activePanel}
             <thead className="sticky top-0 bg-[#0A0A0A] z-10 border-b border-[#282828]">
             <tr className="text-left text-gray-400">
                 <th className="py-2 pl-3 pr-2 font-medium w-10">#</th>

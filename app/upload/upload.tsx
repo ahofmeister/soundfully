@@ -37,25 +37,27 @@ const Upload = () => {
 
             for await (const file of Array.from(songFiles)) {
                 const metadata = await parseBlob(file)
-                console.log(metadata)
 
                 if (file) {
-                    const id = uuid()
-                    const songUpload = await supabase.storage
+                    const {data: uploadData, error: uploadError} = await supabase.storage
                         .from("songs")
-                        .upload(`track-${metadata.common?.title}-${id}`, file, {cacheControl: "31536000"});
+                        .upload(`track-${convertFileNameToBase64(metadata.common?.title!)}`, file, {cacheControl: "31536000"});
 
-                    if (songUpload) {
+                    if (uploadData) {
                         let newSong: NewSong = {
                             title: metadata.common.title ?? '',
                             duration: Math.round(Number(metadata.format.duration)) ?? 0,
                             album: values.album,
-                            path: songUpload.data?.path ?? '',
+                            path: uploadData.path ?? '',
                             artist: metadata.common.artist ?? ''
                         };
                         const {data, error} = await supabase.from("song").insert(newSong);
                         console.log(error)
                         console.log(data)
+                    }
+
+                    if(uploadError){
+                        console.log(uploadError)
                     }
                 }
             }
@@ -108,3 +110,23 @@ const Upload = () => {
 };
 
 export default Upload;
+
+function base64ToBytes(base64: string): Uint8Array {
+    const binString = atob(base64);
+    return Uint8Array.from(binString, (m) => m.codePointAt(0) as number);
+}
+
+function bytesToBase64(bytes: Uint8Array): string {
+    const binString = Array.from(bytes, (byte) =>
+        String.fromCodePoint(byte)
+    ).join("");
+    return btoa(binString);
+}
+
+const convertFileNameToBase64 = (name: string): string => {
+    return bytesToBase64(new TextEncoder().encode(name));
+};
+
+const convertBase64ToFileName = (encoded: string): string => {
+    return new TextDecoder().decode(base64ToBytes(encoded));
+};

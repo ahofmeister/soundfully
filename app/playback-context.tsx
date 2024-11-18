@@ -1,16 +1,7 @@
 "use client"
-import {
-    createContext,
-    ReactNode,
-    useCallback,
-    useContext,
-    useEffect,
-    useRef,
-    useState
-} from "react";
+import {createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState} from "react";
 import {Song} from "@/utils/supabase/types";
 import {createClient} from "@/utils/supabase/client";
-import {it} from "node:test";
 
 type Panel = 'sidebar' | 'tracklist';
 
@@ -56,7 +47,6 @@ function useKeyboardNavigation() {
     const handleKeyNavigation = useCallback(
         (e: React.KeyboardEvent, panel: Panel) => {
             const currentRef = panelRefs.current[panel];
-            console.log(currentRef)
             if (!currentRef?.current) return;
 
             const items = Array.from(
@@ -197,7 +187,6 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
 
         window.addEventListener('keydown', handleGlobalKeyDown);
         return () => {
-            console.log("YO")
             window.removeEventListener('keydown', handleGlobalKeyDown);
         };
     }, [togglePlayPause, playNextTrack, playPreviousTrack]);
