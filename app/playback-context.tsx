@@ -1,7 +1,8 @@
 "use client"
-import {createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState} from "react";
+import React, {createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState} from "react";
 import {Song} from "@/utils/supabase/types";
 import {createClient} from "@/utils/supabase/client";
+import useTrackStore from "@/app/song-store";
 
 type Panel = 'sidebar' | 'tracklist';
 
@@ -108,6 +109,8 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
     const audioRef = useRef<HTMLAudioElement>(null);
     const [repeat, setRepeat] = useState(false)
 
+    const setCurrentStoredTrack = useTrackStore((state) => state.setCurrentTrack)
+    const currentStoredTrack = useTrackStore((state) => state.currentTrack)
 
     const {activePanel, setActivePanel, registerPanelRef, handleKeyNavigation} =
         useKeyboardNavigation();
@@ -138,6 +141,7 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
             setCurrentTime(0);
             if (audioRef.current) {
                 audioRef.current.src = createClient().storage.from("songs").getPublicUrl(track.path).data.publicUrl
+                setCurrentStoredTrack(track.id);
                 audioRef.current.play();
             }
         },
@@ -190,6 +194,32 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
             window.removeEventListener('keydown', handleGlobalKeyDown);
         };
     }, [togglePlayPause, playNextTrack, playPreviousTrack]);
+
+    useEffect(() => {
+        async function findCurrentTrack() {
+            if (!currentStoredTrack) {
+                return
+            }
+
+            const {data, error} = await createClient()
+                .from("song")
+                .select("*")
+                .eq("id", currentStoredTrack)
+                .single();
+
+            if (error) {
+                console.error("Error fetching track:", error);
+            } else {
+                setCurrentTrack(data);
+                if(audioRef){
+                    audioRef.current!.src = createClient().storage.from("songs").getPublicUrl(data.path).data.publicUrl
+                }
+
+            }
+        }
+
+        void findCurrentTrack();
+    }, [currentStoredTrack]);
 
     return (
         <PlaybackContext.Provider
