@@ -8,7 +8,7 @@ import {PlaylistWithSongs} from "@/utils/supabase/types";
 import {NowPlaying} from "@/components/playlist/now-playing";
 
 export const metadata: Metadata = {
-    title: 'Soundfully',
+    title: 'soundfully',
     description: 'Your music.',
 };
 
