@@ -11,3 +11,7 @@ export type PlaylistWithSongs = Database["public"]["Tables"]["playlist"]["Row"] 
     duration: number
     trackCount: number
 }
+
+export type PlaybackSong = Database["public"]["Tables"]["playback"]["Row"] & {
+    song: Song
+}

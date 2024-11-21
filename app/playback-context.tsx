@@ -1,6 +1,6 @@
 "use client"
 import React, {createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState} from "react";
-import {Song} from "@/utils/supabase/types";
+import {PlaybackSong, Song} from "@/utils/supabase/types";
 import {createClient} from "@/utils/supabase/client";
 
 type Panel = 'sidebar' | 'tracklist';
@@ -145,15 +145,22 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
     );
 
     const savePlaybackTime = async () => {
-        if (currentTrack) {
+        if (currentTrack && audioRef.current) {
+            const supabase = createClient();
 
-            await createClient().from("song").update({
-                last_played: false
-            }).eq("last_played", true);
+            const {error} = await supabase
+                .from('playback')
+                .upsert(
+                    {
+                        song_id: currentTrack.id,
+                        playback_time: audioRef.current.currentTime,
+                    },
+                    {onConflict: 'user_id'}
+                );
 
-            await createClient().from("song").update({
-                last_played: true
-            }).eq("id", currentTrack.id);
+            if (error) {
+                console.log(error)
+            }
 
         }
     };
@@ -226,17 +233,17 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
         async function findCurrentTrack() {
 
             const {data, error} = await createClient()
-                .from("song")
-                .select("*")
-                .eq("last_played", true)
-                .single();
+                .from("playback")
+                .select("*, song(*)")
+                .single<PlaybackSong>();
 
             if (error) {
                 console.error("Error fetching track:", error);
             } else {
-                setCurrentTrack(data);
-                if (audioRef) {
-                    audioRef.current!.src = createClient().storage.from("songs").getPublicUrl(data.path).data.publicUrl
+                setCurrentTrack(data.song);
+                if (audioRef && audioRef.current) {
+                    audioRef.current.src = createClient().storage.from("songs").getPublicUrl(data.song.path).data.publicUrl
+                    audioRef.current.currentTime = data.playback_time
                 }
 
             }
