@@ -139,20 +139,20 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
             if (audioRef.current) {
                 audioRef.current.src = createClient().storage.from("songs").getPublicUrl(track.path).data.publicUrl
                 audioRef.current.play();
+                void savePlaybackTime(track)
             }
         },
         [activePanel]
     );
 
-    const savePlaybackTime = async () => {
-        if (currentTrack && audioRef.current) {
+    const savePlaybackTime = async (song: Song | null) => {
+        if (song && audioRef.current) {
             const supabase = createClient();
-
             const {error} = await supabase
                 .from('playback')
                 .upsert(
                     {
-                        song_id: currentTrack.id,
+                        song_id: song.id,
                         playback_time: audioRef.current.currentTime,
                     },
                     {onConflict: 'user_id'}
@@ -167,12 +167,12 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
 
     useEffect(() => {
         const handleBeforeUnload = () => {
-            void savePlaybackTime();
+            void savePlaybackTime(currentTrack);
         };
 
         const intervalId = setInterval(() => {
-            void savePlaybackTime();
-        }, 2 * 60 * 1000);
+            void savePlaybackTime(currentTrack);
+        }, 30 * 1000);
 
         window.addEventListener('beforeunload', handleBeforeUnload);
 
