@@ -62,26 +62,6 @@ const Upload = () => {
                 }
             }
 
-
-            // let buffer = await fs.readFile(filePath);
-
-            // console.log(metadata)
-
-
-            // if (songFiles.error) {
-            //     setIsLoading(false);
-            // }
-
-
-            //
-            //     if (addSongRecord.error) {
-            //         setIsLoading(false);
-            //     }
-            //
-            //     // router.refresh();
-            //     // setIsLoading(false);
-            //     // toast.success("Song uploaded successfully");
-            //     // uploadModal.onClose();
         } catch (error) {
             //     toast.error("Something went wrong");
         } finally {

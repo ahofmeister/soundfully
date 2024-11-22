@@ -1,7 +1,7 @@
 'use client';
 
 import {usePlayback} from '@/app/playback-context';
-import {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Button} from '@/components/ui/button';
 import {MoreHorizontal, Pause, Play, Plus} from 'lucide-react';
 import {
@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import {Song} from "@/utils/supabase/types";
 import {formatDuration} from "@/lib/utils";
+import {cn} from "@/utils/cn";
 
 function TrackRow({
                       track,
@@ -46,6 +47,11 @@ function TrackRow({
         e.preventDefault();
         setActivePanel('tracklist');
         onSelect();
+        if (isCurrentTrack) {
+            togglePlayPause();
+        } else {
+            playTrack(track);
+        }
     }
 
     function onKeyDownTrackRow(e: React.KeyboardEvent<HTMLTableRowElement>) {
@@ -64,9 +70,11 @@ function TrackRow({
 
     return (
         <tr
-            className={`group cursor-pointer hover:bg-[#1A1A1A] select-none relative ${
-                isCurrentTrack ? 'bg-[#1A1A1A]' : ''
-            }`}
+            className={cn(
+                "group cursor-pointer hover:bg-[#1A1A1A] select-none relative",
+                isCurrentTrack ? "bg-[#1A1A1A]" : "",
+                (isSelected || isFocused) && "border border-[#1e3a8a]"
+            )}
             tabIndex={0}
             onClick={onClickTrackRow}
             onKeyDown={onKeyDownTrackRow}
@@ -75,13 +83,10 @@ function TrackRow({
         >
             <td className="py-[2px] pl-3 pr-2 tabular-nums w-10 text-center">
                 {isCurrentTrack && isPlaying ? (
-                    <div
-                        className="flex items-end justify-center space-x-[2px] size-[0.65rem] mx-auto">
+                    <div className="flex items-end justify-center space-x-[2px] size-[0.65rem] mx-auto">
                         <div className="w-1 bg-neutral-600 animate-now-playing-1"></div>
-                        <div
-                            className="w-1 bg-neutral-600 animate-now-playing-2 [animation-delay:0.2s]"></div>
-                        <div
-                            className="w-1 bg-neutral-600 animate-now-playing-3 [animation-delay:0.4s]"></div>
+                        <div className="w-1 bg-neutral-600 animate-now-playing-2 [animation-delay:0.2s]"></div>
+                        <div className="w-1 bg-neutral-600 animate-now-playing-3 [animation-delay:0.4s]"></div>
                     </div>
                 ) : (
                     <span className="text-gray-400">{index + 1}</span>
@@ -89,20 +94,9 @@ function TrackRow({
             </td>
             <td className="py-[2px] px-2">
                 <div className="flex items-center">
-                    {/*<div className="relative size-5 mr-2">*/}
-                    {/*    <Image*/}
-                    {/*        src={track.imageUrl || '/placeholder.svg'}*/}
-                    {/*        alt={`${track.album} cover`}*/}
-                    {/*        fill*/}
-                    {/*        className="object-cover"*/}
-                    {/*    />*/}
-                    {/*</div>*/}
-                    <div
-                        className="font-medium truncate max-w-[180px] sm:max-w-[200px] text-[#d1d5db]">
+                    <div className="font-medium truncate max-w-[180px] sm:max-w-[200px] text-[#d1d5db]">
                         {track.title}
-                        <span className="sm:hidden text-gray-400 ml-1">
-              • {track.artist}
-            </span>
+                        <span className="sm:hidden text-gray-400 ml-1">• {track.artist}</span>
                     </div>
                 </div>
             </td>
@@ -115,72 +109,54 @@ function TrackRow({
             <td className="py-[2px] px-2 tabular-nums text-[#d1d5db]">
                 {formatDuration(track.duration)}
             </td>
-            <td className="py-[2px] px-2">
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button
-                                disabled={isProduction}
-                                variant="ghost"
-                                size="icon"
-                                className="h-5 w-5 text-gray-400 hover:text-white focus:text-white"
-                            >
-                                <MoreHorizontal className="size-4"/>
-                                <span className="sr-only">Track options</span>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48">
-                            <DropdownMenuItem
-                                className="text-xs"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (isCurrentTrack) {
-                                        togglePlayPause();
-                                    } else {
-                                        playTrack(track);
-                                    }
-                                }}
-                            >
-                                {isCurrentTrack && isPlaying ? (
-                                    <>
-                                        <Pause className="mr-2 size-3 stroke-[1.5]"/>
-                                        Pause
-                                    </>
-                                ) : (
-                                    <>
-                                        <Play className="mr-2 size-3 stroke-[1.5]"/>
-                                        Play
-                                    </>
-                                )}
-                            </DropdownMenuItem>
-                            <DropdownMenuSub>
-                                <DropdownMenuSubTrigger className="text-xs">
-                                    <Plus className="mr-2 size-3"/>
-                                    Add to Playlist
-                                </DropdownMenuSubTrigger>
-                                {/*<DropdownMenuSubContent className="w-48">*/}
-                                {/*    {playlists.map((playlist) => (*/}
-                                {/*        <DropdownMenuItem*/}
-                                {/*            className="text-xs"*/}
-                                {/*            key={playlist.id}*/}
-                                {/*            onClick={(e) => {*/}
-                                {/*                e.stopPropagation();*/}
-                                {/*                addToPlaylistAction(playlist.id, track.id);*/}
-                                {/*            }}*/}
-                                {/*        >*/}
-                                {/*            {playlist.name}*/}
-                                {/*        </DropdownMenuItem>*/}
-                                {/*    ))}*/}
-                                {/*</DropdownMenuSubContent>*/}
-                            </DropdownMenuSub>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
+            <td className="py-[2px] px-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button
+                            disabled={isProduction}
+                            variant="ghost"
+                            size="icon"
+                            className="h-5 w-5 text-gray-400 hover:text-white focus:text-white"
+                        >
+                            <MoreHorizontal className="size-4"/>
+                            <span className="sr-only">Track options</span>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem
+                            className="text-xs"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (isCurrentTrack) {
+                                    togglePlayPause();
+                                } else {
+                                    playTrack(track);
+                                }
+                            }}
+                        >
+                            {isCurrentTrack && isPlaying ? (
+                                <>
+                                    <Pause className="mr-2 size-3 stroke-[1.5]"/>
+                                    Pause
+                                </>
+                            ) : (
+                                <>
+                                    <Play className="mr-2 size-3 stroke-[1.5]"/>
+                                    Play
+                                </>
+                            )}
+                        </DropdownMenuItem>
+                        <DropdownMenuSub>
+                            <DropdownMenuSubTrigger className="text-xs">
+                                <Plus className="mr-2 size-3"/>
+                                Add to Playlist
+                            </DropdownMenuSubTrigger>
+                        </DropdownMenuSub>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </td>
-            {(isSelected || isFocused) && (
-                <div className="absolute inset-0 border border-[#1e3a8a] pointer-events-none"/>
-            )}
         </tr>
+
     );
 }
 
@@ -191,7 +167,7 @@ export function TrackTable({
 }) {
     const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
 
-    let { registerPanelRef, setActivePanel, setPlaylist, activePanel } = usePlayback();
+    let {registerPanelRef, setActivePanel, setPlaylist, activePanel} = usePlayback();
     let tableRef = useRef<HTMLTableElement>(null);
 
     useEffect(() => {

@@ -171,13 +171,13 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
         };
 
         const intervalId = setInterval(() => {
-            void savePlaybackTime(); // Periodic sync (every 30 seconds, for example)
+            void savePlaybackTime();
         }, 2 * 60 * 1000);
 
         window.addEventListener('beforeunload', handleBeforeUnload);
 
         return () => {
-            clearInterval(intervalId); // Clean up periodic sync on unmount
+            clearInterval(intervalId);
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
     }, [currentTrack]);
@@ -235,17 +235,19 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
             const {data, error} = await createClient()
                 .from("playback")
                 .select("*, song(*)")
-                .single<PlaybackSong>();
+                .maybeSingle<PlaybackSong>();
 
             if (error) {
                 console.error("Error fetching track:", error);
-            } else {
+                return
+            }
+
+            if (data) {
                 setCurrentTrack(data.song);
                 if (audioRef && audioRef.current) {
                     audioRef.current.src = createClient().storage.from("songs").getPublicUrl(data.song.path).data.publicUrl
                     audioRef.current.currentTime = data.playback_time
                 }
-
             }
         }
 
