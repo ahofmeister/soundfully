@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: 'Soundfully',
-        short_name: 'Soundfully',
+        name: 'soundfully',
+        short_name: 'soundfully',
         description: '',
         start_url: '/',
         display: 'standalone',
