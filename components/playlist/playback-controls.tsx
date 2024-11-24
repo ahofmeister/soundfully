@@ -52,42 +52,36 @@ export function PlaybackButtons() {
         repeatMode
     } = usePlayback();
 
-    return (
-        <div className="flex items-center space-x-2">
-            <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={playPreviousTrack}
-                disabled={!currentTrack}
-            >
-                <SkipBack className="w-4 h-4 stroke-[1.5]"/>
-            </Button>
-            <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={togglePlayPause}
-                disabled={!currentTrack}
-            >
-                {isPlaying ? (
-                    <Pause className="w-5 h-5 stroke-[1.5]"/>
-                ) : (
-                    <Play className="w-5 h-5 stroke-[1.5]"/>
-                )}
-            </Button>
-            <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={playNextTrack}
-                disabled={!currentTrack}
-            >
-                <SkipForward className="w-4 h-4 stroke-[1.5]"/>
-            </Button>
-            <RepeatMode />
-        </div>
-    );
+    return <div className="flex items-center space-x-2">
+        <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={playPreviousTrack}
+            disabled={!currentTrack}
+        >
+            <SkipBack className="w-4 h-4 stroke-[1.5]"/>
+        </Button>
+        <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={togglePlayPause}
+            disabled={!currentTrack}
+        >
+            {isPlaying ? <Pause className="w-5 h-5 stroke-[1.5]"/> : <Play className="w-5 h-5 stroke-[1.5]"/>}
+        </Button>
+        <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={playNextTrack}
+            disabled={!currentTrack}
+        >
+            <SkipForward className="w-4 h-4 stroke-[1.5]"/>
+        </Button>
+        <RepeatMode />
+    </div>;
 }
 
 export function ProgressBar() {
@@ -245,11 +239,8 @@ export function PlaybackControls() {
         if ('mediaSession' in navigator && currentTrack) {
             navigator.mediaSession.metadata = new MediaMetadata({
                 title: currentTrack.title,
-                artist: currentTrack.artist!,
-                album: '',
-                // artwork: [
-                //   { src: currentTrack.imageUrl!, sizes: '512x512', type: 'image/jpeg' },
-                // ],
+                artist: currentTrack.artist,
+                album: currentTrack.album || undefined
             });
 
             navigator.mediaSession.setActionHandler('play', () => {

@@ -159,23 +159,16 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
     };
 
     useEffect(() => {
-        const handleBeforeUnload = () => {
-            void savePlayback(currentTrack);
-        };
-
         const intervalId = setInterval(() => {
             if (isPlaying) {
                 void savePlayback(currentTrack);
             }
         }, 2 * 1000);
 
-        window.addEventListener('beforeunload', handleBeforeUnload);
-
         return () => {
             clearInterval(intervalId);
-            window.removeEventListener('beforeunload', handleBeforeUnload);
         };
-    }, [currentTrack, repeatMode]);
+    }, [currentTrack, repeatMode, isPlaying]);
 
     useEffect(() => {
         if (audioRef.current) {
