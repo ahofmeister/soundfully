@@ -10,7 +10,7 @@ export function TrackInfo() {
     let {currentTrack} = usePlayback();
 
     return (
-        <div className="flex items-center space-x-3 w-1/3">
+        <div className="flex items-center space-x-3 w-1/3 px-3">
             {currentTrack && (
                 <>
                     {/*<img*/}
