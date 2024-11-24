@@ -1,4 +1,5 @@
 import {Database} from "@/utils/supabase/types/schema";
+import exp from "node:constants";
 
 export type Song = Database["public"]["Tables"]["song"]["Row"];
 export type NewSong = Database["public"]["Tables"]["song"]["Insert"];
@@ -15,3 +16,5 @@ export type PlaylistWithSongs = Database["public"]["Tables"]["playlist"]["Row"] 
 export type PlaybackSong = Database["public"]["Tables"]["playback"]["Row"] & {
     song: Song
 }
+
+export type RepeatMode = Database["public"]["Enums"]["repeat_mode"]

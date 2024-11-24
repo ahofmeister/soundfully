@@ -4,6 +4,7 @@ import {useEffect, useRef, useState} from 'react';
 import {Button} from '@/components/ui/button';
 import {Heart, Pause, Play, Repeat1, SkipBack, SkipForward, Volume2, VolumeX,} from 'lucide-react';
 import {usePlayback} from '@/app/playback-context';
+import RepeatMode from "@/app/repeat-mode";
 
 export function TrackInfo() {
     let {currentTrack} = usePlayback();
@@ -46,9 +47,9 @@ export function PlaybackButtons() {
         togglePlayPause,
         playPreviousTrack,
         playNextTrack,
-        repeatTrack,
+        setRepeatMode,
         currentTrack,
-        repeat
+        repeatMode
     } = usePlayback();
 
     return (
@@ -84,14 +85,7 @@ export function PlaybackButtons() {
             >
                 <SkipForward className="w-4 h-4 stroke-[1.5]"/>
             </Button>
-            <Button
-                variant={repeat ? 'secondary' : 'ghost'}
-                size="icon"
-                className="h-8 w-8"
-                onClick={repeatTrack}
-            >
-                <Repeat1 className="w-4 h-4 stroke-[1.5]"/>
-            </Button>
+            <RepeatMode />
         </div>
     );
 }

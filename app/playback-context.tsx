@@ -1,6 +1,6 @@
 "use client"
 import React, {createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState} from "react";
-import {PlaybackSong, Song} from "@/utils/supabase/types";
+import {PlaybackSong, RepeatMode, Song} from "@/utils/supabase/types";
 import {createClient} from "@/utils/supabase/client";
 
 type Panel = 'sidebar' | 'tracklist';
@@ -14,8 +14,8 @@ type PlaybackContextType = {
     playTrack: (track: Song) => void;
     playNextTrack: () => void;
     playPreviousTrack: () => void;
-    repeatTrack: () => void;
-    repeat: boolean
+    setRepeatMode: (repeatMode: RepeatMode) => void;
+    repeatMode: RepeatMode | null;
     setCurrentTime: (time: number) => void;
     setDuration: (duration: number) => void;
     setPlaylist: (songs: Song[]) => void;
@@ -106,7 +106,7 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
     const [duration, setDuration] = useState(0);
     const [playlist, setPlaylist] = useState<Song[]>([]);
     const audioRef = useRef<HTMLAudioElement>(null);
-    const [repeat, setRepeat] = useState(false)
+    const [repeatMode, setRepeatMode] = useState<RepeatMode | null>(null)
 
 
     const {activePanel, setActivePanel, registerPanelRef, handleKeyNavigation} =
@@ -123,14 +123,6 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
         }
     }, [isPlaying]);
 
-    const repeatTrack = useCallback(() => {
-        if (audioRef.current) {
-            let repeat = !audioRef.current.loop;
-            audioRef.current.loop = repeat;
-            setRepeat(repeat)
-        }
-    }, [])
-
     const playTrack = useCallback(
         (track: Song) => {
             setCurrentTrack(track);
@@ -139,14 +131,14 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
             if (audioRef.current) {
                 audioRef.current.src = createClient().storage.from("songs").getPublicUrl(track.path).data.publicUrl
                 audioRef.current.play();
-                void savePlaybackTime(track)
+                void savePlayback(track)
             }
         },
         [activePanel]
     );
 
-    const savePlaybackTime = async (song: Song | null) => {
-        if (song && audioRef.current) {
+    const savePlayback = async (song: Song | null) => {
+        if (song && repeatMode && audioRef.current) {
             const supabase = createClient();
             const {error} = await supabase
                 .from('playback')
@@ -154,9 +146,10 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
                     {
                         song_id: song.id,
                         playback_time: audioRef.current.currentTime,
+                        repeat_mode: repeatMode
                     },
                     {onConflict: 'user_id'}
-                );
+                )
 
             if (error) {
                 console.log(error)
@@ -167,12 +160,14 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
 
     useEffect(() => {
         const handleBeforeUnload = () => {
-            void savePlaybackTime(currentTrack);
+            void savePlayback(currentTrack);
         };
 
         const intervalId = setInterval(() => {
-            void savePlaybackTime(currentTrack);
-        }, 30 * 1000);
+            if (isPlaying) {
+                void savePlayback(currentTrack);
+            }
+        }, 2 * 1000);
 
         window.addEventListener('beforeunload', handleBeforeUnload);
 
@@ -180,7 +175,14 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
             clearInterval(intervalId);
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
-    }, [currentTrack]);
+    }, [currentTrack, repeatMode]);
+
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.loop = repeatMode === 'one';
+        }
+        void savePlayback(currentTrack);
+    }, [repeatMode]);
 
     const playNextTrack = useCallback(() => {
         if (currentTrack && playlist.length > 0) {
@@ -242,18 +244,16 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
                 return
             }
 
-            if (data?.repeat_mode === 'one') {
-                setRepeat(true)
-                if (audioRef.current) {
-                    audioRef.current.loop = true;
-                }
-            }
-
             if (data) {
+                setRepeatMode(data.repeat_mode)
                 setCurrentTrack(data.song);
                 if (audioRef && audioRef.current) {
                     audioRef.current.src = createClient().storage.from("songs").getPublicUrl(data.song.path).data.publicUrl
                     audioRef.current.currentTime = data.playback_time
+
+                    if (data?.repeat_mode === 'one') {
+                        audioRef.current.loop = true;
+                    }
                 }
             }
         }
@@ -272,7 +272,7 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
                 playTrack,
                 playNextTrack,
                 playPreviousTrack,
-                repeatTrack,
+                setRepeatMode,
                 setCurrentTime,
                 setDuration,
                 setPlaylist,
@@ -281,7 +281,7 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
                 setActivePanel,
                 registerPanelRef,
                 handleKeyNavigation,
-                repeat
+                repeatMode
             }}
         >
             {children}
