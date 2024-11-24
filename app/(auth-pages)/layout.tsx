@@ -9,10 +9,6 @@ export default async function Layout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="en">
-        <body className="dark h-[100dvh] text-gray-200 bg-[#0A0A0A]">
-        {children}
-        </body>
-        </html>
+        <>{children}</>
     );
 }
