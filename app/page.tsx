@@ -6,18 +6,17 @@ import {TrackTable} from "@/app/track-table";
 async function Tracks({
                           searchParams,
                       }: {
-    searchParams: { q: string };
+    searchParams: Promise<{ q: string }>;
 }) {
     const {data: songs} = await createClient().from("song").select("*")
     return <TrackTable playlist={songs ?? []}/>;
 }
 
-export default async function Page(
-    props: {
-        searchParams: Promise<{ q: string }>;
-    }
-) {
-    const searchParams = await props.searchParams;
+export default function Page({
+                                 searchParams,
+                             }: {
+    searchParams: Promise<{ q: string }>;
+}) {
     return (
         <div className="flex-1 flex flex-col overflow-hidden bg-[#0A0A0A] pb-[69px] pt-2">
             <ScrollArea className="flex-1">
