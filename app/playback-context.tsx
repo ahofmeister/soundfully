@@ -19,10 +19,10 @@ type PlaybackContextType = {
     setCurrentTime: (time: number) => void;
     setDuration: (duration: number) => void;
     setPlaylist: (songs: Song[]) => void;
-    audioRef: React.RefObject<HTMLAudioElement | null>;
+    audioRef: React.RefObject<HTMLAudioElement>;
     activePanel: Panel;
     setActivePanel: (panel: Panel) => void;
-    registerPanelRef: (panel: Panel, ref: React.RefObject<HTMLElement | null>) => void;
+    registerPanelRef: (panel: Panel, ref: React.RefObject<HTMLElement>) => void;
     handleKeyNavigation: (e: React.KeyboardEvent, panel: Panel) => void;
 };
 
@@ -32,13 +32,13 @@ const PlaybackContext = createContext<PlaybackContextType | undefined>(
 
 function useKeyboardNavigation() {
     const [activePanel, setActivePanel] = useState<Panel>('sidebar');
-    const panelRefs = useRef<Record<Panel, React.RefObject<HTMLElement | null> | null>>({
+    const panelRefs = useRef<Record<Panel, React.RefObject<HTMLElement> | null>>({
         sidebar: null,
         tracklist: null,
     });
 
     const registerPanelRef = useCallback(
-        (panel: Panel, ref: React.RefObject<HTMLElement | null>) => {
+        (panel: Panel, ref: React.RefObject<HTMLElement>) => {
             panelRefs.current[panel] = ref;
         },
         []
