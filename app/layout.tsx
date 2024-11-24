@@ -4,8 +4,8 @@ import {Inter} from 'next/font/google';
 import {PlaybackProvider} from "@/app/playback-context";
 import {Playlists} from "@/components/playlist/playlists";
 import {createClient} from "@/utils/supabase/server";
-import {PlaylistWithSongs} from "@/utils/supabase/types";
 import {NowPlaying} from "@/components/playlist/now-playing";
+import {Account} from "@/app/account";
 
 export const metadata: Metadata = {
     title: 'soundfully',
@@ -25,13 +25,18 @@ export default async function RootLayout({
 
     return (
         <html lang="en" className={inter.className}>
-        <body className="dark flex flex-col md:flex-row h-[100dvh] text-gray-200 bg-[#0A0A0A]">
+        <body className="dark   h-[100dvh] text-gray-200 bg-[#0A0A0A]">
 
-        <PlaybackProvider>
-            <Playlists playlists={playlist ?? []}/>
-            {children}
-            <NowPlaying/>
-        </PlaybackProvider>
+        <div className={"flex items-end justify-end"}>
+            <Account/>
+        </div>
+        <div className={"flex flex-col md:flex-row"}>
+            <PlaybackProvider>
+                <Playlists playlists={playlist ?? []}/>
+                {children}
+                <NowPlaying/>
+            </PlaybackProvider>
+        </div>
         </body>
         </html>
     );
