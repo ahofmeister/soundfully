@@ -84,7 +84,7 @@ export function Playlists({playlists} : {playlists: Playlist[]}) {
 
     return (
         <div
-            className="hidden md:block w-56 bg-[#121212] h-[100dvh] overflow-auto"
+            className="hidden md:block w-56 bg-[#121212] h-[100dvh] overflow-auto rounded-lg"
             onClick={() => setActivePanel('sidebar')}
         >
             <div className="m-4">

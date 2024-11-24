@@ -2,7 +2,7 @@ import {createServerClient} from "@supabase/ssr";
 import {type NextRequest, NextResponse} from "next/server";
 
 export const updateSession = async (request: NextRequest) => {
-    let response = NextResponse.next({
+   let response = NextResponse.next({
         request: {
             headers: request.headers,
         },
@@ -31,8 +31,14 @@ export const updateSession = async (request: NextRequest) => {
         },
     );
 
-    await supabase.auth.getUser();
+    const user = await supabase.auth.getUser();
 
+    const currentUrl = request.url;
 
-    return response;
+    if (user.error && !currentUrl.includes('/sign-in')) {
+        return NextResponse.redirect(new URL('/sign-in', currentUrl));
+    }
+
+    return response
+
 };

@@ -9,7 +9,7 @@ export function NowPlaying() {
 
     return (
         <>
-            <div className="hidden md:block w-56 p-4 bg-[#121212] overflow-auto">
+            <div className="hidden md:block w-56 p-4 bg-[#121212] overflow-auto rounded-lg">
                 {currentTrack ? (
                     <>
                         <h2 className="mb-3 text-sm font-semibold text-gray-200">
