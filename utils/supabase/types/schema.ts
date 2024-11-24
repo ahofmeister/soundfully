@@ -13,18 +13,21 @@ export type Database = {
         Row: {
           id: string
           playback_time: number
+          repeat_mode: Database["public"]["Enums"]["repeat_mode"]
           song_id: string
           user_id: string
         }
         Insert: {
           id?: string
           playback_time?: number
+          repeat_mode?: Database["public"]["Enums"]["repeat_mode"]
           song_id: string
           user_id?: string
         }
         Update: {
           id?: string
           playback_time?: number
+          repeat_mode?: Database["public"]["Enums"]["repeat_mode"]
           song_id?: string
           user_id?: string
         }
@@ -99,7 +102,6 @@ export type Database = {
           created_at: string
           duration: number
           id: string
-          last_played: boolean
           path: string
           title: string
         }
@@ -109,7 +111,6 @@ export type Database = {
           created_at?: string
           duration?: number
           id?: string
-          last_played?: boolean
           path: string
           title: string
         }
@@ -119,7 +120,6 @@ export type Database = {
           created_at?: string
           duration?: number
           id?: string
-          last_played?: boolean
           path?: string
           title?: string
         }
@@ -133,7 +133,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      repeat_mode: "one" | "all" | "none"
     }
     CompositeTypes: {
       [_ in never]: never

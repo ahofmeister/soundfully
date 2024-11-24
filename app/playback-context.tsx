@@ -242,6 +242,13 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
                 return
             }
 
+            if (data?.repeat_mode === 'one') {
+                setRepeat(true)
+                if (audioRef.current) {
+                    audioRef.current.loop = true;
+                }
+            }
+
             if (data) {
                 setCurrentTrack(data.song);
                 if (audioRef && audioRef.current) {
