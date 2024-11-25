@@ -177,6 +177,7 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
         void savePlayback(currentTrack);
     }, [repeatMode]);
 
+
     const playNextTrack = useCallback(() => {
         if (currentTrack && playlist.length > 0) {
             const currentIndex = playlist.findIndex(
@@ -197,6 +198,31 @@ export function PlaybackProvider({children}: { children: ReactNode }) {
             playTrack(playlist[previousIndex]);
         }
     }, [currentTrack, playlist, playTrack]);
+
+    useEffect(() => {
+        const audio = audioRef.current;
+
+        const handleTrackEnd = () => {
+            if (repeatMode === 'all') {
+                playNextTrack();
+            } else if (repeatMode === 'one') {
+                audio?.play();
+            } else {
+                setIsPlaying(false); // Stop playback
+            }
+        };
+
+        if (audio) {
+            audio.addEventListener('ended', handleTrackEnd);
+        }
+
+        return () => {
+            if (audio) {
+                audio.removeEventListener('ended', handleTrackEnd);
+            }
+        };
+    }, [repeatMode, playNextTrack]);
+
 
     useEffect(() => {
         const handleGlobalKeyDown = (e: KeyboardEvent) => {
