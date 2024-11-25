@@ -2,18 +2,26 @@ import React, {Suspense} from 'react';
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import {createClient} from "@/utils/supabase/server";
 import {TrackTable} from "@/app/track-table";
+import {Song} from "@/utils/supabase/types";
 
 async function Tracks({
                           searchParams,
                       }: {
     searchParams: { q: string };
 }) {
-    const {data: songs} = await createClient().from("song").select("*")
+    const query = (searchParams).q;
+    const queryBuilder = createClient().from("song").select("*");
+
+    if (query) {
+        queryBuilder.like("title", `%${query}%`);
+    }
+
+    const { data: songs } = await queryBuilder;
     return <TrackTable playlist={songs ?? []}/>;
 }
 
 
-const Page = async (  props: {
+const Page = async (props: {
     searchParams: Promise<{ q: string }>;
 }) => {
     const searchParams = await props.searchParams;
