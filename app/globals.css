@@ -69,8 +69,6 @@
 
     body {
         @apply bg-background text-foreground;
-        height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
-
     }
 }
 

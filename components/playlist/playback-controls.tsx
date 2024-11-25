@@ -317,8 +317,11 @@ export function PlaybackControls() {
 
     return (
         <div
-            className="fixed bottom-0 left-0 right-0 flex items-center justify-between p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] bg-[#181818] border-t border-[#282828]">
+            className="fixed bottom-0 left-0 right-0 flex items-center justify-between p-2 pb-[calc(2rem+env(safe-area-inset-bottom))] md:pb-[calc(0.5rem+env(safe-area-inset-bottom))] bg-[#181818] border-t border-[#282828]">
             <audio ref={audioRef}/>
+            <div>
+
+            </div>
             <TrackInfo/>
             <div className="flex flex-col items-center w-1/3">
                 <PlaybackButtons/>
