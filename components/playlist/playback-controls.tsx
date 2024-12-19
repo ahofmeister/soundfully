@@ -240,7 +240,10 @@ export function PlaybackControls() {
             navigator.mediaSession.metadata = new MediaMetadata({
                 title: currentTrack.title,
                 artist: currentTrack.artist,
-                album: currentTrack.album || undefined
+                album: currentTrack.album || undefined,
+                artwork: [
+                    { src: './icons/artwork.png', sizes: '512x512', type: 'image/png' },
+                ]
             });
 
             navigator.mediaSession.setActionHandler('play', () => {

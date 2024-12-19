@@ -1,4 +1,4 @@
-import type {Metadata} from "next";
+import type {Metadata, Viewport} from "next";
 import {Inter} from "next/font/google";
 
 export const metadata: Metadata = {
@@ -6,6 +6,10 @@ export const metadata: Metadata = {
     description: 'Your music.',
 };
 const inter = Inter({subsets: ['latin']});
+
+export const viewport: Viewport = {
+    userScalable: false,
+};
 
 export default function RootLayout({children}: { children: React.ReactNode }) {
 
