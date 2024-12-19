@@ -242,7 +242,7 @@ export function PlaybackControls() {
                 artist: currentTrack.artist,
                 album: currentTrack.album || undefined,
                 artwork: [
-                    { src: './icons/artwork.png', sizes: '512x512', type: 'image/png' },
+                    { src: './artwork.png', sizes: '512x512', type: 'image/png' },
                 ]
             });
 
