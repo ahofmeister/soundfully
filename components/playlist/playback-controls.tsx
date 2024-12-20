@@ -243,11 +243,10 @@ export function PlaybackControls() {
         title: currentTrack.title,
         artist: currentTrack.artist,
         album: currentTrack.album || undefined,
-        artwork: [
-          { src: "./artwork.png", sizes: "512x512", type: "image/png" },
-        ],
+        artwork: [{ src: "/artwork.png", sizes: "512x512", type: "image/png" }],
       });
 
+      console.log(navigator.mediaSession.metadata.artwork);
       navigator.mediaSession.setActionHandler("play", () => {
         audioRef.current?.play();
         togglePlayPause();
