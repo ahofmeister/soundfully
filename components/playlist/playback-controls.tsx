@@ -106,7 +106,7 @@ export function ProgressBar() {
 
   return (
     <>
-      <div className="flex items-center w-full">
+      <div className="flex max-w-96 items-center justify-center mx-auto">
         <div
           ref={progressBarRef}
           className="flex-grow mx-2 h-1 bg-[#3E3E3E] rounded-full cursor-pointer relative"
@@ -120,7 +120,7 @@ export function ProgressBar() {
           ></div>
         </div>
       </div>
-      <div className={"flex justify-between p-2"}>
+      <div className={"flex justify-between p-2 mx-auto max-w-96"}>
         <span className="text-xs tabular-nums text-gray-400">
           {formatTime(currentTime)}
         </span>
@@ -244,7 +244,7 @@ export function PlaybackControls() {
         artist: currentTrack.artist,
         album: currentTrack.album || undefined,
         artwork: [
-          { src: "./icons/artwork.png", sizes: "512x512", type: "image/png" },
+          { src: "./artwork.png", sizes: "512x512", type: "image/png" },
         ],
       });
 
@@ -323,11 +323,11 @@ export function PlaybackControls() {
   return (
     <div
       className={
-        "fixed bottom-0 left-0 right-0 p-4 pb-[calc(2.5rem+env(safe-area-inset-bottom))] md:pb-[calc(0.5rem+env(safe-area-inset-bottom))] bg-[#181818] border-t border-[#282828]"
+        "pt-2 fixed bottom-0 left-0 right-0 playlist-4 pb-[calc(2.5rem+env(safe-area-inset-bottom))] md:pb-[calc(0.5rem+env(safe-area-inset-bottom))] bg-[#181818] border-t border-[#282828]"
       }
     >
       <TrackInfo />
-      <div className={"mt-2 mb-1"}>
+      <div className={"mt-2"}>
         <ProgressBar />
       </div>
 

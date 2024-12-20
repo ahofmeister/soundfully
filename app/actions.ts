@@ -4,6 +4,7 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -127,4 +128,32 @@ export const signOutAction = async () => {
   const supabase = createClient();
   await supabase.auth.signOut();
   return redirect("/sign-in");
+};
+
+export const addToPlaylistAction = async (
+  playlistId: string,
+  trackId: string,
+) => {
+  const supabase = createClient();
+
+  const { data, error: error1 } = await supabase
+    .from("playlist_song")
+    .select("order.max()")
+    .eq("playlist_id", playlistId)
+    .returns<MaxResult[]>()
+    .single();
+  console.log(data);
+
+  const { error } = await supabase.from("playlist_song").upsert({
+    playlist_id: playlistId,
+    song_id: trackId,
+    order: data!.max + 1 ?? "1",
+  });
+  // console.log(error);
+
+  revalidatePath("/", "layout");
+};
+
+type MaxResult = {
+  max: number;
 };
