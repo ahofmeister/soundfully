@@ -85,7 +85,7 @@ importers:
         specifier: 8.4.33
         version: 8.4.33
       tailwind-merge:
-        specifier: ^2.5.2
+        specifier: ^2.5.3
         version: 2.5.3
       tailwindcss:
         specifier: 3.4.1
@@ -174,7 +174,7 @@ packages:
     os: [linux]
 
   '@next/swc-linux-x64-musl@14.2.14':
-    resolution: {integrity: sha512-7TcQCvLQ/hKfQRgjxMN4TZ2BRB0P7HwrGAYL+playlist+m3u3XcKTraUFerVbV3jkNZNwDeQDa8zdxkKkw2els/S5onQ==}
+    resolution: {integrity: sha512-7TcQCvLQ/hKfQRgjxMN4TZ2BRB0P7HwrGAYL+p+m3u3XcKTraUFerVbV3jkNZNwDeQDa8zdxkKkw2els/S5onQ==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]

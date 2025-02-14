@@ -95,6 +95,14 @@ export function Playlists() {
           >
             All Tracks
           </Link>
+          <Link
+            href="/artists"
+            className={`block py-1 px-4 -mx-4 text-xs text-[#d1d5db] hover:bg-[#1A1A1A] transition-colors focus:outline-none focus:ring-[0.5px] focus:ring-gray-400 ${
+              pathname === "/" ? "bg-[#1A1A1A]" : ""
+            }`}
+          >
+            All Artists
+          </Link>
         </div>
         <div className="flex justify-between items-center mb-4">
           <Link
