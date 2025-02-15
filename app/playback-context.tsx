@@ -255,10 +255,20 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     async function findCurrentTrack() {
-      const { data, error } = await createClient()
+      let supabase = createClient();
+      const { data, error } = await supabase
         .from("playback")
         .select("*, song(*)")
         .maybeSingle<PlaybackSong>();
+
+      supabase
+        .channel("playback")
+        .on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "playback" },
+          (event) => setIsPlaying(event.new.playing),
+        )
+        .subscribe();
 
       if (error) {
         console.error("Error fetching track:", error);
