@@ -13,6 +13,7 @@ export type Database = {
         Row: {
           id: string;
           playback_time: number;
+          playing: boolean;
           repeat: boolean;
           song_id: string;
           user_id: string;
@@ -20,6 +21,7 @@ export type Database = {
         Insert: {
           id?: string;
           playback_time?: number;
+          playing?: boolean;
           repeat?: boolean;
           song_id: string;
           user_id?: string;
@@ -27,6 +29,7 @@ export type Database = {
         Update: {
           id?: string;
           playback_time?: number;
+          playing?: boolean;
           repeat?: boolean;
           song_id?: string;
           user_id?: string;

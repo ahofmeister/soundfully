@@ -127,6 +127,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       }
       setIsPlaying(!isPlaying);
     }
+    void savePlayback(currentTrack, !isPlaying);
   }, [isPlaying]);
 
   const playTrack = useCallback(
@@ -139,20 +140,22 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
           .storage.from("songs")
           .getPublicUrl(track.path).data.publicUrl;
         audioRef.current.play();
-        void savePlayback(track);
+        void savePlayback(track, isPlaying);
       }
     },
     [activePanel],
   );
 
-  const savePlayback = async (song: Song | null) => {
+  const savePlayback = async (song: Song | null, playing: boolean) => {
     if (song && audioRef.current) {
+      console.log(playing);
       const supabase = createClient();
       const { error } = await supabase.from("playback").upsert(
         {
           song_id: song.id,
           playback_time: audioRef.current.currentTime,
           repeat: repeat,
+          playing: playing,
         },
         { onConflict: "user_id" },
       );
@@ -166,7 +169,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const intervalId = setInterval(() => {
       if (isPlaying) {
-        void savePlayback(currentTrack);
+        void savePlayback(currentTrack, true);
       }
     }, 2 * 1000);
 
@@ -179,7 +182,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     if (audioRef.current) {
       audioRef.current.loop = repeat;
     }
-    void savePlayback(currentTrack);
+    void savePlayback(currentTrack, isPlaying);
   }, [repeat]);
 
   const playNextTrack = useCallback(() => {
