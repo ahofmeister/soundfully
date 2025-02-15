@@ -17,7 +17,7 @@ export default async function ArtistPage({
     .eq("artist", decodeURIComponent(finalParams.name));
 
   return (
-    <ScrollArea className="flex-1 mt-3">
+    <ScrollArea className="mt-3 h-full pb-60">
       <div className="min-w-max">
         <TrackTable playlist={data ?? []} />
       </div>

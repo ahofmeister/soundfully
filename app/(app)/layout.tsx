@@ -7,6 +7,7 @@ import { ReactNode } from "react";
 import "../globals.css";
 import { PlaybackControls } from "@/components/playlist/playback-controls";
 import { PlaylistProvider } from "@/app/use-playlist";
+import { AppMobileNavigation } from "@/components/navigation/app-mobile-navigation";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const supabase = createClient();
@@ -30,6 +31,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
             {children}
           </PlaylistProvider>
           <PlaybackControls />
+          <AppMobileNavigation />
         </PlaybackProvider>
       </div>
     </>

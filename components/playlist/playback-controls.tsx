@@ -322,7 +322,7 @@ export function PlaybackControls() {
   return (
     <div
       className={
-        "pt-2 fixed bottom-0 left-0 right-0 playlist-4 pb-[calc(2.5rem+env(safe-area-inset-bottom))] md:pb-[calc(0.5rem+env(safe-area-inset-bottom))] bg-[#181818] border-t border-[#282828]"
+        " h-56 pt-2 fixed bottom-0 left-0 right-0 playlist-4 pb-[calc(2.5rem+env(safe-area-inset-bottom))] md:pb-[calc(0.5rem+env(safe-area-inset-bottom))] bg-[#181818] border-t border-[#282828]"
       }
     >
       <TrackInfo />
