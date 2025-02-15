@@ -17,3 +17,5 @@ export type PlaylistWithSongs =
 export type PlaybackSong = Database["public"]["Tables"]["playback"]["Row"] & {
   song: Song;
 };
+
+export type Device = Database["public"]["Tables"]["device"]["Row"];

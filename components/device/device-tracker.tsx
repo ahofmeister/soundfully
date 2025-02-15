@@ -54,7 +54,7 @@ const updateDevice = async (userId: string) => {
   const supabase = createClient();
   await supabase.from("device").upsert({
     user_id: userId,
-    device_id: getOrCreateDeviceId(),
+    id: getOrCreateDeviceId(),
     device_name: getDeviceType(),
     last_active: new Date().toISOString(),
   });

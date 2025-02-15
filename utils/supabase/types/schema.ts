@@ -11,21 +11,18 @@ export type Database = {
     Tables: {
       device: {
         Row: {
-          device_id: string
           device_name: string | null
           id: string
           last_active: string | null
           user_id: string | null
         }
         Insert: {
-          device_id: string
           device_name?: string | null
           id?: string
           last_active?: string | null
           user_id?: string | null
         }
         Update: {
-          device_id?: string
           device_name?: string | null
           id?: string
           last_active?: string | null

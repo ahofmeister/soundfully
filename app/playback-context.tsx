@@ -8,7 +8,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { PlaybackSong, Song } from "@/utils/supabase/types";
+import { Device, PlaybackSong, Song } from "@/utils/supabase/types";
 import { createClient } from "@/utils/supabase/client";
 import { getOrCreateDeviceId } from "@/components/device/device-tracker";
 
@@ -33,7 +33,8 @@ type PlaybackContextType = {
   setActivePanel: (panel: Panel) => void;
   registerPanelRef: (panel: Panel, ref: React.RefObject<HTMLElement>) => void;
   handleKeyNavigation: (e: React.KeyboardEvent, panel: Panel) => void;
-  currentDevice: string | null;
+  currentDeviceId: string | null;
+  currentDevice: Device | null;
 };
 
 const PlaybackContext = createContext<PlaybackContextType | undefined>(
@@ -116,7 +117,8 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   const [playlist, setPlaylist] = useState<Song[]>([]);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [repeat, setRepeat] = useState<boolean>(false);
-  const [currentDevice, setCurrentDevice] = useState<string | null>(null);
+  const [currentDeviceId, setCurrentDeviceId] = useState<string | null>(null);
+  const [currentDevice, setCurrentDevice] = useState<Device | null>(null);
 
   const { activePanel, setActivePanel, registerPanelRef, handleKeyNavigation } =
     useKeyboardNavigation();
@@ -232,6 +234,23 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   }, [repeat, playNextTrack]);
 
   useEffect(() => {
+    const getDevice = async (deviceId: string) => {
+      const supabase = createClient();
+      const { data: device } = await supabase
+        .from("device")
+        .select("*")
+        .eq("id", deviceId ?? "");
+      return device && device[0];
+    };
+
+    if (currentDeviceId) {
+      getDevice(currentDeviceId).then((device) => {
+        setCurrentDevice(device);
+      });
+    }
+  }, [currentDeviceId]);
+
+  useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       if (e.key === " " && e.target === document.body) {
         e.preventDefault();
@@ -273,7 +292,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
             if (event.new.controlling_device_id !== getOrCreateDeviceId()) {
               setIsPlaying(event.new.playing);
               setCurrentTime(event.new.playback_time);
-              setCurrentDevice(event.new.controlling_device_id);
+              setCurrentDeviceId(event.new.controlling_device_id);
             }
           },
         )
@@ -287,7 +306,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       if (data) {
         setRepeat(data.repeat);
         setCurrentTrack(data.song);
-        setCurrentDevice(data.controlling_device_id);
+        setCurrentDeviceId(data.controlling_device_id);
         if (audioRef && audioRef.current) {
           audioRef.current.src = createClient()
             .storage.from("songs")
@@ -323,6 +342,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
         registerPanelRef,
         handleKeyNavigation,
         repeat,
+        currentDeviceId,
         currentDevice,
       }}
     >
