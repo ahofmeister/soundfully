@@ -8,6 +8,7 @@ import "../globals.css";
 import { PlaybackControls } from "@/components/playlist/playback-controls";
 import { PlaylistProvider } from "@/app/use-playlist";
 import { AppMobileNavigation } from "@/components/navigation/app-mobile-navigation";
+import DeviceTracker from "@/components/device/device-tracker";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const supabase = createClient();
@@ -19,6 +20,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <>
+      <DeviceTracker />
       {user && (
         <div className={"flex items-end justify-end"}>
           <Account user={user} />

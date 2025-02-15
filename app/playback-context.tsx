@@ -10,6 +10,7 @@ import React, {
 } from "react";
 import { PlaybackSong, Song } from "@/utils/supabase/types";
 import { createClient } from "@/utils/supabase/client";
+import { getOrCreateDeviceId } from "@/components/device/device-tracker";
 
 type Panel = "sidebar" | "tracklist";
 
@@ -148,7 +149,6 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
 
   const savePlayback = async (song: Song | null, playing: boolean) => {
     if (song && audioRef.current) {
-      console.log(playing);
       const supabase = createClient();
       const { error } = await supabase.from("playback").upsert(
         {
@@ -156,6 +156,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
           playback_time: audioRef.current.currentTime,
           repeat: repeat,
           playing: playing,
+          controlling_device_id: getOrCreateDeviceId(),
         },
         { onConflict: "user_id" },
       );
@@ -266,7 +267,15 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
         .on(
           "postgres_changes",
           { event: "UPDATE", schema: "public", table: "playback" },
-          (event) => setIsPlaying(event.new.playing),
+          (event) => {
+            if (event.new.controlling_device_id !== getOrCreateDeviceId()) {
+              setIsPlaying(event.new.playing);
+              if (event.new.playing) {
+                audioRef.current?.play();
+              }
+              setCurrentTime(event.new.playback_time);
+            }
+          },
         )
         .subscribe();
 
