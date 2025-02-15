@@ -19,6 +19,9 @@ const getDeviceType = (): string => {
 
   const userAgent = navigator.userAgent.toLowerCase();
   const hasTouch = navigator.maxTouchPoints > 1;
+  const isPWA =
+    window.matchMedia("(display-mode: standalone)").matches ||
+    (navigator as any).standalone === true;
 
   if (/iphone|ipad|ipod/.test(userAgent)) {
     return "iOS";
@@ -37,13 +40,17 @@ const getDeviceType = (): string => {
   }
 
   if (/macintosh|mac os x/.test(userAgent)) {
-    return hasTouch ? "iPad (iOS)" : "MacBook";
+    return hasTouch
+      ? "iPad (iOS)"
+      : isPWA
+        ? "MacBook (App)"
+        : "MacBook (Browser)";
   }
 
-  return "Browser";
+  return isPWA ? "PWA (Browser)" : "Browser";
 };
 
-const updateDeviceInfo = async (userId: string) => {
+const updateDevice = async (userId: string) => {
   const supabase = createClient();
   await supabase.from("device").upsert({
     user_id: userId,
@@ -55,19 +62,19 @@ const updateDeviceInfo = async (userId: string) => {
 
 export default function DeviceTracker() {
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchUserAndUpdateDevice = async () => {
       const supabase = createClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
       if (user?.id) {
-        await updateDeviceInfo(user.id);
+        await updateDevice(user.id);
       }
     };
 
-    fetchUser();
+    fetchUserAndUpdateDevice();
   }, []);
 
-  return null; // No UI needed, just tracking
+  return null;
 }
