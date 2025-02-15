@@ -408,7 +408,7 @@ export function PlaybackControls() {
           </div>
         </div>
         {currentDevice !== getOrCreateDeviceId() && (
-          <div className={"text-xs"}>Other Device</div>
+          <div className={"text-xs"}>Other Device ({currentDevice})</div>
         )}
       </div>
     </div>
