@@ -273,6 +273,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
             if (event.new.controlling_device_id !== getOrCreateDeviceId()) {
               setIsPlaying(event.new.playing);
               setCurrentTime(event.new.playback_time);
+              setCurrentDevice(event.new.controlling_device_id);
             }
           },
         )

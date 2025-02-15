@@ -407,8 +407,8 @@ export function PlaybackControls() {
             <MobilePlaybackButtons />
           </div>
         </div>
-        {currentDevice === getOrCreateDeviceId() && (
-          <div className={"text-xs"}>Current Device</div>
+        {currentDevice !== getOrCreateDeviceId() && (
+          <div className={"text-xs"}>Other Device</div>
         )}
       </div>
     </div>
