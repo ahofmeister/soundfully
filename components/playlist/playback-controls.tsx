@@ -11,7 +11,7 @@ import {
   VolumeX,
 } from "lucide-react";
 import { usePlayback } from "@/app/playback-context";
-import RepeatMode from "@/app/repeat-mode";
+import RepeatToggle from "@/app/repeat-toggle";
 
 export function TrackInfo() {
   let { currentTrack } = usePlayback();
@@ -40,9 +40,9 @@ export function PlaybackButtons() {
     togglePlayPause,
     playPreviousTrack,
     playNextTrack,
-    setRepeatMode,
+    setRepeat,
     currentTrack,
-    repeatMode,
+    repeat,
   } = usePlayback();
 
   return (
@@ -78,7 +78,55 @@ export function PlaybackButtons() {
       >
         <SkipForward className="size-6 stroke-[1.5]" />
       </Button>
-      <RepeatMode />
+      <RepeatToggle />
+    </div>
+  );
+}
+
+export function MobilePlaybackButtons() {
+  let {
+    isPlaying,
+    togglePlayPause,
+    playPreviousTrack,
+    playNextTrack,
+    setRepeat,
+    currentTrack,
+    repeat,
+  } = usePlayback();
+
+  return (
+    <div className="flex gap-x-2">
+      <RepeatToggle />
+      {/*<Button*/}
+      {/*  variant="ghost"*/}
+      {/*  size="icon"*/}
+      {/*  className="h-8 w-8"*/}
+      {/*  onClick={playPreviousTrack}*/}
+      {/*  disabled={!currentTrack}*/}
+      {/*>*/}
+      {/*  <SkipBack className="size-6 stroke-[1.5]" />*/}
+      {/*</Button>*/}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={togglePlayPause}
+        disabled={!currentTrack}
+      >
+        {isPlaying ? (
+          <Pause className="size-6 stroke-[1.5]" />
+        ) : (
+          <Play className="size-6 stroke-[1.5]" />
+        )}
+      </Button>
+      {/*<Button*/}
+      {/*  variant="ghost"*/}
+      {/*  size="icon"*/}
+      {/*  className="h-8 w-8"*/}
+      {/*  onClick={playNextTrack}*/}
+      {/*  disabled={!currentTrack}*/}
+      {/*>*/}
+      {/*  <SkipForward className="size-6 stroke-[1.5]" />*/}
+      {/*</Button>*/}
     </div>
   );
 }
@@ -246,7 +294,6 @@ export function PlaybackControls() {
         artwork: [{ src: "/artwork.png", sizes: "512x512", type: "image/png" }],
       });
 
-      console.log(navigator.mediaSession.metadata.artwork);
       navigator.mediaSession.setActionHandler("play", () => {
         audioRef.current?.play();
         togglePlayPause();
@@ -320,23 +367,40 @@ export function PlaybackControls() {
   ]);
 
   return (
-    <div
-      className={
-        " h-56 pt-2 fixed bottom-0 left-0 right-0 playlist-4 pb-[calc(2.5rem+env(safe-area-inset-bottom))] md:pb-[calc(0.5rem+env(safe-area-inset-bottom))] bg-[#181818] border-t border-[#282828]"
-      }
-    >
-      <TrackInfo />
-      <div className={"mt-2"}>
-        <ProgressBar />
-      </div>
-
-      <div className="flex items-center justify-between">
-        <audio ref={audioRef} />
-        <div className="flex-1 flex items-center justify-center">
-          <PlaybackButtons />
+    <div>
+      <div
+        className={
+          " bg-[#181818]  md:flex md:flex-col hidden h-36  pt-2 fixed bottom-0 left-0 right-0 playlist-4 pb-[calc(2.5rem+env(safe-area-inset-bottom))] md:pb-[calc(0.5rem+env(safe-area-inset-bottom))] border-t border-[#282828]"
+        }
+      >
+        <TrackInfo />
+        <div className={"mt-2"}>
+          <ProgressBar />
         </div>
-        <div className="ml-auto">
-          <Volume />
+
+        <div className="flex items-center justify-between">
+          <audio ref={audioRef} />
+          <div className="flex-1 flex items-center justify-center">
+            <PlaybackButtons />
+          </div>
+          <div className="ml-auto">
+            <Volume />
+          </div>
+        </div>
+      </div>
+      <div
+        className={
+          "p-2 flex justify-between md:hidden h-36 fixed bottom-0 left-0 right-0 playlist-4 pb-[calc(2.5rem+env(safe-area-inset-bottom))] md:pb-[calc(0.5rem+env(safe-area-inset-bottom))] bg-[#181818] border-t border-[#282828]"
+        }
+      >
+        <span className={"flex flex-col text-xs px-4 gap-x-1"}>
+          {currentTrack?.title}
+          <span className={"text-muted-foreground"}>
+            {currentTrack?.artist}
+          </span>
+        </span>
+        <div className={"flex"}>
+          <MobilePlaybackButtons />
         </div>
       </div>
     </div>

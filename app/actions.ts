@@ -142,7 +142,6 @@ export const addToPlaylistAction = async (
     .eq("playlist_id", playlistId)
     .returns<MaxResult[]>()
     .single();
-  console.log(data);
 
   const { error } = await supabase.from("playlist_song").upsert({
     playlist_id: playlistId,

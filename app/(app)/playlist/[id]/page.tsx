@@ -66,7 +66,7 @@ export default async function PlaylistPage({
           </p>
         </div>
       </div>
-      <ScrollArea className="mt-3 h-full pb-60">
+      <ScrollArea className="mt-3 h-full pb-40">
         <div className="min-w-max">
           <TrackTable playlist={playlist.songs ?? []} />
         </div>

@@ -1,7 +1,7 @@
 import React from "react";
 import { createClient } from "@/utils/supabase/server";
 import { TrackTable } from "@/app/(app)/track-table";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default async function ArtistPage({
   params,
@@ -17,11 +17,10 @@ export default async function ArtistPage({
     .eq("artist", decodeURIComponent(finalParams.name));
 
   return (
-    <ScrollArea className="mt-3 h-full pb-60">
+    <ScrollArea className="mt-3 h-full pb-40">
       <div className="min-w-max">
         <TrackTable playlist={data ?? []} />
       </div>
-      <ScrollBar orientation="horizontal" />
     </ScrollArea>
   );
 }

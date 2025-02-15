@@ -19,7 +19,7 @@ const Page = async (props: { searchParams: Promise<{ q: string }> }) => {
   const searchParams = await props.searchParams;
   return (
     <div className={"flex-1 flex flex-col overflow-hidden bg-[#0A0A0A] pt-2 "}>
-      <ScrollArea className="h-full pb-60">
+      <ScrollArea className="h-full pb-40">
         <div className="min-w-max">
           <Suspense fallback={<div className="w-full" />}>
             <Tracks searchParams={searchParams} />
