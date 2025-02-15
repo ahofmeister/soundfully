@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { usePlayback } from "@/app/playback-context";
 import RepeatToggle from "@/app/repeat-toggle";
+import { getOrCreateDeviceId } from "@/components/device/device-tracker";
 
 export function TrackInfo() {
   let { currentTrack } = usePlayback();
@@ -267,6 +268,7 @@ export function PlaybackControls() {
     playPreviousTrack,
     playNextTrack,
     togglePlayPause,
+    currentDevice,
   } = usePlayback();
 
   useEffect(() => {
@@ -388,20 +390,26 @@ export function PlaybackControls() {
           </div>
         </div>
       </div>
+
       <div
         className={
-          "p-2 flex justify-between md:hidden h-36 fixed bottom-0 left-0 right-0 playlist-4 pb-[calc(2.5rem+env(safe-area-inset-bottom))] md:pb-[calc(0.5rem+env(safe-area-inset-bottom))] bg-[#181818] border-t border-[#282828]"
+          "p-2  flex flex-col h-40 fixed bottom-0 left-0 right-0 playlist-4 pb-[calc(2.5rem+env(safe-area-inset-bottom))] md:pb-[calc(0.5rem+env(safe-area-inset-bottom))] bg-[#181818] border-t border-[#282828] md:hidden"
         }
       >
-        <span className={"flex flex-col text-xs px-4 gap-x-1"}>
-          {currentTrack?.title}
-          <span className={"text-muted-foreground"}>
-            {currentTrack?.artist}
+        <div className={"flex justify-between "}>
+          <span className={"flex flex-col text-xs px-4 gap-x-1"}>
+            {currentTrack?.title}
+            <span className={"text-muted-foreground"}>
+              {currentTrack?.artist}
+            </span>
           </span>
-        </span>
-        <div className={"flex"}>
-          <MobilePlaybackButtons />
+          <div className={"flex"}>
+            <MobilePlaybackButtons />
+          </div>
         </div>
+        {currentDevice === getOrCreateDeviceId() && (
+          <div className={"text-xs"}>Current Device</div>
+        )}
       </div>
     </div>
   );

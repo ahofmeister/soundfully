@@ -33,6 +33,7 @@ type PlaybackContextType = {
   setActivePanel: (panel: Panel) => void;
   registerPanelRef: (panel: Panel, ref: React.RefObject<HTMLElement>) => void;
   handleKeyNavigation: (e: React.KeyboardEvent, panel: Panel) => void;
+  currentDevice: string | null;
 };
 
 const PlaybackContext = createContext<PlaybackContextType | undefined>(
@@ -115,6 +116,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   const [playlist, setPlaylist] = useState<Song[]>([]);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [repeat, setRepeat] = useState<boolean>(false);
+  const [currentDevice, setCurrentDevice] = useState<string | null>(null);
 
   const { activePanel, setActivePanel, registerPanelRef, handleKeyNavigation } =
     useKeyboardNavigation();
@@ -270,9 +272,6 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
           (event) => {
             if (event.new.controlling_device_id !== getOrCreateDeviceId()) {
               setIsPlaying(event.new.playing);
-              if (event.new.playing) {
-                audioRef.current?.play();
-              }
               setCurrentTime(event.new.playback_time);
             }
           },
@@ -287,12 +286,13 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       if (data) {
         setRepeat(data.repeat);
         setCurrentTrack(data.song);
+        setCurrentDevice(data.controlling_device_id);
         if (audioRef && audioRef.current) {
           audioRef.current.src = createClient()
             .storage.from("songs")
             .getPublicUrl(data.song.path).data.publicUrl;
           audioRef.current.currentTime = data.playback_time;
-
+          setIsPlaying(data.playing);
           audioRef.current.loop = data?.repeat;
         }
       }
@@ -322,6 +322,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
         registerPanelRef,
         handleKeyNavigation,
         repeat,
+        currentDevice,
       }}
     >
       {children}
