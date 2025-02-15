@@ -248,7 +248,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
         setCurrentDevice(device);
       });
     }
-  }, [currentDeviceId]);
+  }, []);
 
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
