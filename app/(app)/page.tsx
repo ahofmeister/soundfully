@@ -5,7 +5,10 @@ import { TrackTable } from "@/app/(app)/track-table";
 
 async function Tracks({ searchParams }: { searchParams: { q: string } }) {
   const query = searchParams.q;
-  const queryBuilder = createClient().from("song").select("*");
+  const queryBuilder = createClient()
+    .from("song")
+    .select("*")
+    .order("artist", { ascending: true });
 
   if (query) {
     queryBuilder.like("title", `%${query}%`);
