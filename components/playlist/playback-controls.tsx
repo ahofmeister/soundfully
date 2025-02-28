@@ -13,6 +13,7 @@ import {
 import { usePlayback } from "@/app/playback-context";
 import RepeatToggle from "@/app/repeat-toggle";
 import DeviceSwitcher from "@/components/device/device-switcher";
+import ShuffleToggle from "@/app/shuffle-toggle";
 
 export function TrackInfo() {
   let { currentTrack } = usePlayback();
@@ -98,6 +99,7 @@ export function MobilePlaybackButtons() {
   return (
     <div className="flex gap-x-2">
       <RepeatToggle />
+      <ShuffleToggle />
       {/*<Button*/}
       {/*  variant="ghost"*/}
       {/*  size="icon"*/}

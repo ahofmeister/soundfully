@@ -26,8 +26,10 @@ type PlaybackContextType = {
   playTrack: (track: Song) => void;
   playNextTrack: () => void;
   playPreviousTrack: () => void;
-  setRepeat: (repeat: boolean) => void;
   repeat: boolean;
+  setRepeat: (repeat: boolean) => void;
+  shuffle: boolean;
+  setShuffle: (shuffle: boolean) => void;
   setCurrentTime: (time: number) => void;
   setDuration: (duration: number) => void;
   setPlaylist: (songs: Song[]) => void;
@@ -119,6 +121,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   const [playlist, setPlaylist] = useState<Song[]>([]);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [repeat, setRepeat] = useState<boolean>(false);
+  const [shuffle, setShuffle] = useState<boolean>(false);
 
   const { devices } = useDeviceStore();
 
@@ -163,8 +166,9 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
           song_id: song.id,
           playback_time: audioRef.current.currentTime,
           repeat: repeat,
+          shuffle: shuffle,
           playing: playing,
-          device_id: activeDevice.id,
+          device_id: activeDevice?.id,
         },
         { onConflict: "user_id" },
       );
@@ -194,15 +198,31 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     void savePlayback(currentTrack, isPlaying);
   }, [repeat]);
 
+  useEffect(() => {
+    void savePlayback(currentTrack, isPlaying);
+  }, [shuffle]);
+
   const playNextTrack = useCallback(() => {
     if (currentTrack && playlist.length > 0) {
       const currentIndex = playlist.findIndex(
         (track) => track.id === currentTrack.id,
       );
-      const nextIndex = (currentIndex + 1) % playlist.length;
+
+      let nextIndex;
+
+      if (shuffle) {
+        // Get a random index that is not the current track
+        do {
+          nextIndex = Math.floor(Math.random() * playlist.length);
+        } while (nextIndex === currentIndex);
+      } else {
+        // Play the next track in order, looping if needed
+        nextIndex = (currentIndex + 1) % playlist.length;
+      }
+
       playTrack(playlist[nextIndex]);
     }
-  }, [currentTrack, playlist, playTrack]);
+  }, [currentTrack, playlist, playTrack, shuffle]);
 
   const playPreviousTrack = useCallback(() => {
     if (currentTrack && playlist.length > 0) {
@@ -235,7 +255,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
         audio.removeEventListener("ended", handleTrackEnd);
       }
     };
-  }, [repeat, playNextTrack]);
+  }, [repeat, shuffle, playNextTrack]);
 
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
@@ -323,7 +343,6 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
         playTrack,
         playNextTrack,
         playPreviousTrack,
-        setRepeat,
         setCurrentTime,
         setDuration,
         setPlaylist,
@@ -333,6 +352,9 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
         registerPanelRef,
         handleKeyNavigation,
         repeat,
+        setRepeat,
+        shuffle,
+        setShuffle,
         savePlayback,
       }}
     >
