@@ -18,9 +18,13 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (!user) {
+    return null;
+  }
+
   return (
     <>
-      <DeviceTracker />
+      <DeviceTracker userId={user.id} />
       {user && (
         <div className={"flex items-end justify-end"}>
           <Account user={user} />

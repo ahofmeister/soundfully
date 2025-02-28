@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { usePlayback } from "@/app/playback-context";
 import RepeatToggle from "@/app/repeat-toggle";
+import DeviceSwitcher from "@/components/device/device-switcher";
 
 export function TrackInfo() {
   let { currentTrack } = usePlayback();
@@ -267,7 +268,6 @@ export function PlaybackControls() {
     playPreviousTrack,
     playNextTrack,
     togglePlayPause,
-    currentDevice,
   } = usePlayback();
 
   useEffect(() => {
@@ -406,10 +406,8 @@ export function PlaybackControls() {
             <MobilePlaybackButtons />
           </div>
         </div>
-        <div className={"text-xs text-green-500"}>
-          {currentDevice?.device_name}
-        </div>
-        {/*)}*/}
+
+        <DeviceSwitcher />
       </div>
     </div>
   );

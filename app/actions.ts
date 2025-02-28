@@ -148,7 +148,6 @@ export const addToPlaylistAction = async (
     song_id: trackId,
     order: data!.max + 1 ?? "1",
   });
-  // console.log(error);
 
   revalidatePath("/", "layout");
 };

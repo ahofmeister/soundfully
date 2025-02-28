@@ -11,18 +11,21 @@ export type Database = {
     Tables: {
       device: {
         Row: {
+          active: boolean
           device_name: string | null
           id: string
           last_active: string | null
           user_id: string | null
         }
         Insert: {
+          active?: boolean
           device_name?: string | null
           id?: string
           last_active?: string | null
           user_id?: string | null
         }
         Update: {
+          active?: boolean
           device_name?: string | null
           id?: string
           last_active?: string | null
@@ -32,7 +35,6 @@ export type Database = {
       }
       playback: {
         Row: {
-          controlling_device_id: string | null
           id: string
           playback_time: number
           playing: boolean
@@ -41,7 +43,6 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          controlling_device_id?: string | null
           id?: string
           playback_time?: number
           playing?: boolean
@@ -50,7 +51,6 @@ export type Database = {
           user_id?: string
         }
         Update: {
-          controlling_device_id?: string | null
           id?: string
           playback_time?: number
           playing?: boolean

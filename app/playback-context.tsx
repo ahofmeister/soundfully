@@ -8,9 +8,9 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Device, PlaybackSong, Song } from "@/utils/supabase/types";
+import { FullPlayback, Playback, Song } from "@/utils/supabase/types";
 import { createClient } from "@/utils/supabase/client";
-import { getOrCreateDeviceId } from "@/components/device/device-tracker";
+import { useDeviceStore } from "@/components/device/device-store";
 
 type Panel = "sidebar" | "tracklist";
 
@@ -33,8 +33,7 @@ type PlaybackContextType = {
   setActivePanel: (panel: Panel) => void;
   registerPanelRef: (panel: Panel, ref: React.RefObject<HTMLElement>) => void;
   handleKeyNavigation: (e: React.KeyboardEvent, panel: Panel) => void;
-  currentDeviceId: string | null;
-  currentDevice: Device | null;
+  savePlayback: (song: Song | null, playing: boolean) => void;
 };
 
 const PlaybackContext = createContext<PlaybackContextType | undefined>(
@@ -117,8 +116,8 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   const [playlist, setPlaylist] = useState<Song[]>([]);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [repeat, setRepeat] = useState<boolean>(false);
-  const [currentDeviceId, setCurrentDeviceId] = useState<string | null>(null);
-  const [currentDevice, setCurrentDevice] = useState<Device | null>(null);
+
+  const { devices } = useDeviceStore();
 
   const { activePanel, setActivePanel, registerPanelRef, handleKeyNavigation } =
     useKeyboardNavigation();
@@ -160,7 +159,6 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
           playback_time: audioRef.current.currentTime,
           repeat: repeat,
           playing: playing,
-          controlling_device_id: getOrCreateDeviceId(),
         },
         { onConflict: "user_id" },
       );
@@ -171,17 +169,17 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      if (isPlaying) {
-        void savePlayback(currentTrack, true);
-      }
-    }, 2 * 1000);
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [currentTrack, repeat, isPlaying]);
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     if (isPlaying) {
+  //       void savePlayback(currentTrack, true);
+  //     }
+  //   }, 2 * 1000);
+  //
+  //   return () => {
+  //     clearInterval(intervalId);
+  //   };
+  // }, [currentTrack, repeat, isPlaying]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -234,23 +232,6 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   }, [repeat, playNextTrack]);
 
   useEffect(() => {
-    const getDevice = async (deviceId: string) => {
-      const supabase = createClient();
-      const { data: device } = await supabase
-        .from("device")
-        .select("*")
-        .eq("id", deviceId ?? "");
-      return device && device[0];
-    };
-
-    if (currentDeviceId) {
-      getDevice(currentDeviceId).then((device) => {
-        setCurrentDevice(device);
-      });
-    }
-  }, []);
-
-  useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       if (e.key === " " && e.target === document.body) {
         e.preventDefault();
@@ -278,10 +259,10 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function findCurrentTrack() {
       let supabase = createClient();
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("playback")
         .select("*, song(*)")
-        .maybeSingle<PlaybackSong>();
+        .maybeSingle<FullPlayback>();
 
       supabase
         .channel("playback")
@@ -289,24 +270,27 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
           "postgres_changes",
           { event: "UPDATE", schema: "public", table: "playback" },
           (event) => {
-            if (event.new.controlling_device_id !== getOrCreateDeviceId()) {
-              setIsPlaying(event.new.playing);
-              setCurrentTime(event.new.playback_time);
-              setCurrentDeviceId(event.new.controlling_device_id);
+            let updatedPlayback = event.new as Playback;
+            let isPlaying = updatedPlayback.playing;
+            setIsPlaying(isPlaying);
+
+            if (isPlaying) {
+              audioRef.current?.play();
+            } else {
+              audioRef.current?.pause();
             }
+
+            setRepeat(updatedPlayback.repeat);
+            // console.log("event.new", event.new);
+            // setCurrentTime(event.new.playback_time);
+            // }
           },
         )
         .subscribe();
-
-      if (error) {
-        console.error("Error fetching track:", error);
-        return;
-      }
-
+      //
       if (data) {
         setRepeat(data.repeat);
         setCurrentTrack(data.song);
-        setCurrentDeviceId(data.controlling_device_id);
         if (audioRef && audioRef.current) {
           audioRef.current.src = createClient()
             .storage.from("songs")
@@ -342,8 +326,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
         registerPanelRef,
         handleKeyNavigation,
         repeat,
-        currentDeviceId,
-        currentDevice,
+        savePlayback,
       }}
     >
       {children}
