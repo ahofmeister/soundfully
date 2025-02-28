@@ -294,9 +294,6 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
             }
 
             setRepeat(updatedPlayback.repeat);
-            // console.log("event.new", event.new);
-            // setCurrentTime(event.new.playback_time);
-            // }
           },
         )
         .subscribe();
