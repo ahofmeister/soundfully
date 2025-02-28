@@ -156,12 +156,15 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   const savePlayback = async (song: Song | null, playing: boolean) => {
     if (song && audioRef.current) {
       const supabase = createClient();
+
+      const activeDevice = devices.filter((x) => x.active)[0];
       const { error } = await supabase.from("playback").upsert(
         {
           song_id: song.id,
           playback_time: audioRef.current.currentTime,
           repeat: repeat,
           playing: playing,
+          device_id: activeDevice.id,
         },
         { onConflict: "user_id" },
       );
@@ -277,7 +280,12 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
             let isPlaying = updatedPlayback.playing;
             setIsPlaying(isPlaying);
 
-            const id = getOrCreateDeviceId();
+            if (getOrCreateDeviceId() === updatedPlayback.device_id) {
+              console.log("CURRENT");
+            } else {
+              console.log("NO");
+              console.log(updatedPlayback.device_id);
+            }
 
             if (isPlaying) {
               audioRef.current?.play();

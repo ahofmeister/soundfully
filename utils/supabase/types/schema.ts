@@ -12,29 +12,30 @@ export type Database = {
       device: {
         Row: {
           active: boolean
-          device_name: string | null
+          device_name: string
           id: string
           last_active: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           active?: boolean
-          device_name?: string | null
+          device_name: string
           id?: string
           last_active?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           active?: boolean
-          device_name?: string | null
+          device_name?: string
           id?: string
           last_active?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
       playback: {
         Row: {
+          device_id: string | null
           id: string
           playback_time: number
           playing: boolean
@@ -43,6 +44,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          device_id?: string | null
           id?: string
           playback_time?: number
           playing?: boolean
@@ -51,6 +53,7 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          device_id?: string | null
           id?: string
           playback_time?: number
           playing?: boolean
@@ -59,6 +62,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "playback_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "device"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "playback_song_id_fkey"
             columns: ["song_id"]
