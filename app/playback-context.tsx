@@ -281,14 +281,11 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
             setIsPlaying(isPlaying);
 
             if (getOrCreateDeviceId() === updatedPlayback.device_id) {
-              console.log("CURRENT");
-            } else {
-              console.log("NO");
-              console.log(updatedPlayback.device_id);
-            }
-
-            if (isPlaying) {
-              audioRef.current?.play();
+              if (isPlaying) {
+                audioRef.current?.play();
+              } else {
+                audioRef.current?.pause();
+              }
             } else {
               audioRef.current?.pause();
             }
@@ -297,7 +294,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
           },
         )
         .subscribe();
-      //
+
       if (data) {
         setRepeat(data.repeat);
         setCurrentTrack(data.song);
