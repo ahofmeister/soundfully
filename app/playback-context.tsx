@@ -10,7 +10,10 @@ import React, {
 } from "react";
 import { FullPlayback, Playback, Song } from "@/utils/supabase/types";
 import { createClient } from "@/utils/supabase/client";
-import { useDeviceStore } from "@/components/device/device-store";
+import {
+  getOrCreateDeviceId,
+  useDeviceStore,
+} from "@/components/device/device-store";
 
 type Panel = "sidebar" | "tracklist";
 
@@ -273,6 +276,8 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
             let updatedPlayback = event.new as Playback;
             let isPlaying = updatedPlayback.playing;
             setIsPlaying(isPlaying);
+
+            const id = getOrCreateDeviceId();
 
             if (isPlaying) {
               audioRef.current?.play();

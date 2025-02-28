@@ -12,7 +12,7 @@ export const useDeviceStore = create<DeviceState>((set) => ({
   setDevices: (devices) => set({ devices }),
 }));
 
-const getOrCreateDeviceId = () => {
+export const getOrCreateDeviceId = () => {
   let deviceId = localStorage.getItem("device_id");
   if (!deviceId) {
     deviceId = crypto.randomUUID();
@@ -26,7 +26,10 @@ export const updateDeviceInfo = async (userId: string) => {
 
   const supabase = createClient();
 
-  const { data } = await supabase.from("device").select("*");
+  const { data } = await supabase
+    .from("device")
+    .select("*")
+    .order("device_name", { ascending: true });
 
   if (data) {
     useDeviceStore.getState().setDevices(data ?? []);
@@ -61,7 +64,11 @@ export const subscribeToDevices = () => {
           newDevice,
         ];
 
-        setDevices(updatedDevices);
+        setDevices(
+          updatedDevices.sort((a, b) =>
+            a.device_name!.localeCompare(b.device_name!),
+          ),
+        );
       },
     )
     .subscribe();
