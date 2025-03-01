@@ -4,181 +4,150 @@ export type Json =
   | boolean
   | null
   | { [key: string]: Json | undefined }
-  | Json[]
+  | Json[];
 
 export type Database = {
   public: {
     Tables: {
-      device: {
-        Row: {
-          active: boolean
-          device_name: string
-          id: string
-          last_active: string | null
-          user_id: string
-        }
-        Insert: {
-          active?: boolean
-          device_name: string
-          id?: string
-          last_active?: string | null
-          user_id: string
-        }
-        Update: {
-          active?: boolean
-          device_name?: string
-          id?: string
-          last_active?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
       playback: {
         Row: {
-          device_id: string | null
-          id: string
-          playback_time: number
-          playing: boolean
-          repeat: boolean
-          song_id: string
-          user_id: string
-        }
+          id: string;
+          playback_time: number;
+          playing: boolean;
+          repeat: boolean;
+          shuffle: boolean | null;
+          song_id: string;
+          user_id: string;
+        };
         Insert: {
-          device_id?: string | null
-          id?: string
-          playback_time?: number
-          playing?: boolean
-          repeat?: boolean
-          song_id: string
-          user_id?: string
-        }
+          id?: string;
+          playback_time?: number;
+          playing?: boolean;
+          repeat?: boolean;
+          shuffle?: boolean | null;
+          song_id: string;
+          user_id?: string;
+        };
         Update: {
-          device_id?: string | null
-          id?: string
-          playback_time?: number
-          playing?: boolean
-          repeat?: boolean
-          song_id?: string
-          user_id?: string
-        }
+          id?: string;
+          playback_time?: number;
+          playing?: boolean;
+          repeat?: boolean;
+          shuffle?: boolean | null;
+          song_id?: string;
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "playback_device_id_fkey"
-            columns: ["device_id"]
-            isOneToOne: false
-            referencedRelation: "device"
-            referencedColumns: ["id"]
+            foreignKeyName: "playback_song_id_fkey";
+            columns: ["song_id"];
+            isOneToOne: false;
+            referencedRelation: "song";
+            referencedColumns: ["id"];
           },
-          {
-            foreignKeyName: "playback_song_id_fkey"
-            columns: ["song_id"]
-            isOneToOne: false
-            referencedRelation: "song"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+        ];
+      };
       playlist: {
         Row: {
-          created_at: string
-          id: string
-          name: string
-        }
+          created_at: string;
+          id: string;
+          name: string;
+        };
         Insert: {
-          created_at?: string
-          id?: string
-          name: string
-        }
+          created_at?: string;
+          id?: string;
+          name: string;
+        };
         Update: {
-          created_at?: string
-          id?: string
-          name?: string
-        }
-        Relationships: []
-      }
+          created_at?: string;
+          id?: string;
+          name?: string;
+        };
+        Relationships: [];
+      };
       playlist_song: {
         Row: {
-          order: number
-          playlist_id: string
-          song_id: string
-        }
+          order: number;
+          playlist_id: string;
+          song_id: string;
+        };
         Insert: {
-          order: number
-          playlist_id: string
-          song_id: string
-        }
+          order: number;
+          playlist_id: string;
+          song_id: string;
+        };
         Update: {
-          order?: number
-          playlist_id?: string
-          song_id?: string
-        }
+          order?: number;
+          playlist_id?: string;
+          song_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "playlist_song_playlist_id_fkey"
-            columns: ["playlist_id"]
-            isOneToOne: false
-            referencedRelation: "playlist"
-            referencedColumns: ["id"]
+            foreignKeyName: "playlist_song_playlist_id_fkey";
+            columns: ["playlist_id"];
+            isOneToOne: false;
+            referencedRelation: "playlist";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "playlist_song_song_id_fkey"
-            columns: ["song_id"]
-            isOneToOne: false
-            referencedRelation: "song"
-            referencedColumns: ["id"]
+            foreignKeyName: "playlist_song_song_id_fkey";
+            columns: ["song_id"];
+            isOneToOne: false;
+            referencedRelation: "song";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       song: {
         Row: {
-          album: string | null
-          artist: string
-          created_at: string
-          duration: number
-          id: string
-          path: string
-          title: string
-          user_id: string
-        }
+          album: string | null;
+          artist: string;
+          created_at: string;
+          duration: number;
+          id: string;
+          path: string;
+          title: string;
+          user_id: string;
+        };
         Insert: {
-          album?: string | null
-          artist: string
-          created_at?: string
-          duration?: number
-          id?: string
-          path: string
-          title: string
-          user_id?: string
-        }
+          album?: string | null;
+          artist: string;
+          created_at?: string;
+          duration?: number;
+          id?: string;
+          path: string;
+          title: string;
+          user_id?: string;
+        };
         Update: {
-          album?: string | null
-          artist?: string
-          created_at?: string
-          duration?: number
-          id?: string
-          path?: string
-          title?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-    }
+          album?: string | null;
+          artist?: string;
+          created_at?: string;
+          duration?: number;
+          id?: string;
+          path?: string;
+          title?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+    };
     Views: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Functions: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Enums: {
-      repeat_mode: "one" | "all" | "none"
-    }
+      repeat_mode: "one" | "all" | "none";
+    };
     CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-}
+      [_ in never]: never;
+    };
+  };
+};
 
-type PublicSchema = Database[Extract<keyof Database, "public">]
+type PublicSchema = Database[Extract<keyof Database, "public">];
 
 export type Tables<
   PublicTableNameOrOptions extends
@@ -191,7 +160,7 @@ export type Tables<
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
       Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
+      Row: infer R;
     }
     ? R
     : never
@@ -199,11 +168,11 @@ export type Tables<
         PublicSchema["Views"])
     ? (PublicSchema["Tables"] &
         PublicSchema["Views"])[PublicTableNameOrOptions] extends {
-        Row: infer R
+        Row: infer R;
       }
       ? R
       : never
-    : never
+    : never;
 
 export type TablesInsert<
   PublicTableNameOrOptions extends
@@ -214,17 +183,17 @@ export type TablesInsert<
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
+      Insert: infer I;
     }
     ? I
     : never
   : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
     ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-        Insert: infer I
+        Insert: infer I;
       }
       ? I
       : never
-    : never
+    : never;
 
 export type TablesUpdate<
   PublicTableNameOrOptions extends
@@ -235,17 +204,17 @@ export type TablesUpdate<
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
+      Update: infer U;
     }
     ? U
     : never
   : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
     ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-        Update: infer U
+        Update: infer U;
       }
       ? U
       : never
-    : never
+    : never;
 
 export type Enums<
   PublicEnumNameOrOptions extends
@@ -258,14 +227,14 @@ export type Enums<
   ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
     ? PublicSchema["Enums"][PublicEnumNameOrOptions]
-    : never
+    : never;
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof PublicSchema["CompositeTypes"]
     | { schema: keyof Database },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof Database;
   }
     ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
@@ -273,4 +242,4 @@ export type CompositeTypes<
   ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
     ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+    : never;

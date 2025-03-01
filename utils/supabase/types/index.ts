@@ -18,7 +18,4 @@ export type Playback = Database["public"]["Tables"]["playback"]["Row"];
 
 export type FullPlayback = Playback & {
   song: Song;
-  device: Device;
 };
-
-export type Device = Database["public"]["Tables"]["device"]["Row"];

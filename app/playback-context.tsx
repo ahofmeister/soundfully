@@ -8,12 +8,8 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { FullPlayback, Playback, Song } from "@/utils/supabase/types";
+import { FullPlayback, Song } from "@/utils/supabase/types";
 import { createClient } from "@/utils/supabase/client";
-import {
-  getOrCreateDeviceId,
-  useDeviceStore,
-} from "@/components/device/device-store";
 
 type Panel = "sidebar" | "tracklist";
 
@@ -123,8 +119,6 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   const [repeat, setRepeat] = useState<boolean>(false);
   const [shuffle, setShuffle] = useState<boolean>(false);
 
-  const { devices } = useDeviceStore();
-
   const { activePanel, setActivePanel, registerPanelRef, handleKeyNavigation } =
     useKeyboardNavigation();
 
@@ -160,7 +154,6 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     if (song && audioRef.current) {
       const supabase = createClient();
 
-      const activeDevice = devices.filter((x) => x.active)[0];
       const { error } = await supabase.from("playback").upsert(
         {
           song_id: song.id,
@@ -168,7 +161,6 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
           repeat: repeat,
           shuffle: shuffle,
           playing: playing,
-          device_id: activeDevice?.id,
         },
         { onConflict: "user_id" },
       );
@@ -289,31 +281,6 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
         .from("playback")
         .select("*, song(*)")
         .maybeSingle<FullPlayback>();
-
-      supabase
-        .channel("playback")
-        .on(
-          "postgres_changes",
-          { event: "UPDATE", schema: "public", table: "playback" },
-          (event) => {
-            let updatedPlayback = event.new as Playback;
-            let isPlaying = updatedPlayback.playing;
-            setIsPlaying(isPlaying);
-
-            if (getOrCreateDeviceId() === updatedPlayback.device_id) {
-              if (isPlaying) {
-                audioRef.current?.play();
-              } else {
-                audioRef.current?.pause();
-              }
-            } else {
-              audioRef.current?.pause();
-            }
-
-            setRepeat(updatedPlayback.repeat);
-          },
-        )
-        .subscribe();
 
       if (data) {
         setRepeat(data.repeat);
