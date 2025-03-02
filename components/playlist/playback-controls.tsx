@@ -80,6 +80,7 @@ export function PlaybackButtons() {
         <SkipForward className="size-6 stroke-[1.5]" />
       </Button>
       <RepeatToggle />
+      <ShuffleToggle />
     </div>
   );
 }
