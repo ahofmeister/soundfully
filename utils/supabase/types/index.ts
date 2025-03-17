@@ -19,3 +19,5 @@ export type Playback = Database["public"]["Tables"]["playback"]["Row"];
 export type FullPlayback = Playback & {
   song: Song;
 };
+
+export type PlayMode = "repeat_one" | "shuffle";

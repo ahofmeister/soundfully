@@ -12,28 +12,25 @@ export type Database = {
       playback: {
         Row: {
           id: string;
+          play_mode: Database["public"]["Enums"]["play_mode"] | null;
           playback_time: number;
           playing: boolean;
-          repeat: boolean;
-          shuffle: boolean | null;
           song_id: string;
           user_id: string;
         };
         Insert: {
           id?: string;
+          play_mode?: Database["public"]["Enums"]["play_mode"] | null;
           playback_time?: number;
           playing?: boolean;
-          repeat?: boolean;
-          shuffle?: boolean | null;
           song_id: string;
           user_id?: string;
         };
         Update: {
           id?: string;
+          play_mode?: Database["public"]["Enums"]["play_mode"] | null;
           playback_time?: number;
           playing?: boolean;
-          repeat?: boolean;
-          shuffle?: boolean | null;
           song_id?: string;
           user_id?: string;
         };
@@ -139,7 +136,7 @@ export type Database = {
       [_ in never]: never;
     };
     Enums: {
-      repeat_mode: "one" | "all" | "none";
+      play_mode: "repeat_one" | "shuffle";
     };
     CompositeTypes: {
       [_ in never]: never;

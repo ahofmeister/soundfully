@@ -11,8 +11,7 @@ import {
   VolumeX,
 } from "lucide-react";
 import { usePlayback } from "@/app/playback-context";
-import RepeatToggle from "@/app/repeat-toggle";
-import ShuffleToggle from "@/app/shuffle-toggle";
+import PlayModeToggle from "@/app/play-mode-toggle";
 
 export function TrackInfo() {
   let { currentTrack } = usePlayback();
@@ -41,9 +40,9 @@ export function PlaybackButtons() {
     togglePlayPause,
     playPreviousTrack,
     playNextTrack,
-    setRepeat,
+    setPlayMode,
     currentTrack,
-    repeat,
+    playMode,
   } = usePlayback();
 
   return (
@@ -79,8 +78,7 @@ export function PlaybackButtons() {
       >
         <SkipForward className="size-6 stroke-[1.5]" />
       </Button>
-      <RepeatToggle />
-      <ShuffleToggle />
+      <PlayModeToggle />
     </div>
   );
 }
@@ -91,15 +89,14 @@ export function MobilePlaybackButtons() {
     togglePlayPause,
     playPreviousTrack,
     playNextTrack,
-    setRepeat,
+    setPlayMode,
     currentTrack,
-    repeat,
+    playMode,
   } = usePlayback();
 
   return (
     <div className="flex gap-x-2">
-      <RepeatToggle />
-      <ShuffleToggle />
+      <PlayModeToggle />
       {/*<Button*/}
       {/*  variant="ghost"*/}
       {/*  size="icon"*/}

@@ -8,7 +8,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { FullPlayback, Song } from "@/utils/supabase/types";
+import { FullPlayback, PlayMode, Song } from "@/utils/supabase/types";
 import { createClient } from "@/utils/supabase/client";
 
 type Panel = "sidebar" | "tracklist";
@@ -22,10 +22,8 @@ type PlaybackContextType = {
   playTrack: (track: Song) => void;
   playNextTrack: () => void;
   playPreviousTrack: () => void;
-  repeat: boolean;
-  setRepeat: (repeat: boolean) => void;
-  shuffle: boolean;
-  setShuffle: (shuffle: boolean) => void;
+  playMode?: PlayMode | undefined;
+  setPlayMode: (playMode: PlayMode | undefined) => void;
   setCurrentTime: (time: number) => void;
   setDuration: (duration: number) => void;
   setPlaylist: (songs: Song[]) => void;
@@ -116,8 +114,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   const [duration, setDuration] = useState(0);
   const [playlist, setPlaylist] = useState<Song[]>([]);
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [repeat, setRepeat] = useState<boolean>(false);
-  const [shuffle, setShuffle] = useState<boolean>(false);
+  const [playMode, setPlayMode] = useState<PlayMode | undefined>("shuffle");
 
   const { activePanel, setActivePanel, registerPanelRef, handleKeyNavigation } =
     useKeyboardNavigation();
@@ -127,7 +124,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       if (isPlaying) {
         audioRef.current.pause();
       } else {
-        audioRef.current.play();
+        void audioRef.current.play();
       }
       setIsPlaying(!isPlaying);
     }
@@ -158,8 +155,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
         {
           song_id: song.id,
           playback_time: audioRef.current.currentTime,
-          repeat: repeat,
-          shuffle: shuffle,
+          play_mode: playMode,
           playing: playing,
         },
         { onConflict: "user_id" },
@@ -185,14 +181,10 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.loop = repeat;
+      audioRef.current.loop = playMode === "repeat_one";
     }
     void savePlayback(currentTrack, isPlaying);
-  }, [repeat]);
-
-  useEffect(() => {
-    void savePlayback(currentTrack, isPlaying);
-  }, [shuffle]);
+  }, [playMode]);
 
   const playNextTrack = useCallback(() => {
     if (currentTrack && playlist.length > 0) {
@@ -202,7 +194,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
 
       let nextIndex;
 
-      if (shuffle) {
+      if (playMode === "shuffle") {
         // Get a random index that is not the current track
         do {
           nextIndex = Math.floor(Math.random() * playlist.length);
@@ -214,7 +206,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
 
       playTrack(playlist[nextIndex]);
     }
-  }, [currentTrack, playlist, playTrack, shuffle]);
+  }, [currentTrack, playlist, playTrack, playMode]);
 
   const playPreviousTrack = useCallback(() => {
     if (currentTrack && playlist.length > 0) {
@@ -231,11 +223,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     const audio = audioRef.current;
 
     const handleTrackEnd = () => {
-      if (repeat) {
-        audio?.play();
-      } else {
-        playNextTrack();
-      }
+      playNextTrack();
     };
 
     if (audio) {
@@ -247,7 +235,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
         audio.removeEventListener("ended", handleTrackEnd);
       }
     };
-  }, [repeat, shuffle, playNextTrack]);
+  }, [playMode, playNextTrack]);
 
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
@@ -283,7 +271,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
         .maybeSingle<FullPlayback>();
 
       if (data) {
-        setRepeat(data.repeat);
+        setPlayMode(data.play_mode ?? undefined);
         setCurrentTrack(data.song);
         if (audioRef && audioRef.current) {
           audioRef.current.src = createClient()
@@ -291,7 +279,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
             .getPublicUrl(data.song.path).data.publicUrl;
           audioRef.current.currentTime = data.playback_time;
           setIsPlaying(data.playing);
-          audioRef.current.loop = data?.repeat;
+          audioRef.current.loop = data?.play_mode === "repeat_one";
         }
       }
     }
@@ -318,10 +306,8 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
         setActivePanel,
         registerPanelRef,
         handleKeyNavigation,
-        repeat,
-        setRepeat,
-        shuffle,
-        setShuffle,
+        playMode,
+        setPlayMode,
         savePlayback,
       }}
     >
