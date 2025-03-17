@@ -2,14 +2,14 @@ import React from "react";
 import { createClient } from "@/utils/supabase/server";
 import { ArtistCard } from "@/app/(app)/artists/artist-card";
 
-export type ArtistWithSongCount = { name: string; songCount: number };
+export type ArtistWithSongCount = { name: string; count: number };
 
 const ArtistsOverviewPage = async () => {
   const supabase = createClient();
 
   const { data } = await supabase
     .from("song")
-    .select("name:artist, songCount: count()")
+    .select("name:artist, count: count()")
     .order("artist", { ascending: true })
     .returns<ArtistWithSongCount[]>();
 

@@ -12,7 +12,7 @@ export function ArtistCard(props: { artist: ArtistWithSongCount }) {
       onClick={() => router.push(`/artists/${props.artist.name}`)}
     >
       <div>{props.artist.name}</div>
-      <CardDescription>{props.artist.songCount} songs</CardDescription>
+      <CardDescription>{props.artist.count} songs</CardDescription>
     </div>
   );
 }
